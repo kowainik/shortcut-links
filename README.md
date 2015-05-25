@@ -1,0 +1,3 @@
+# magiclinks
+
+Package!
