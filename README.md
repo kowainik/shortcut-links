@@ -1,3 +1,3 @@
-# magiclinks
+# shortcut-links
 
 Package!

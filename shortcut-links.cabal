@@ -1,4 +1,4 @@
-name:                magiclinks
+name:                shortcut-links
 version:             0.1.0.0
 synopsis:            Link shortcuts for use in text markup
 description:
@@ -7,9 +7,8 @@ description:
   .
   (This was a pretty simple example and it doesn't show everything 
   this package can do; for more complicated ones, see the docs.)
-homepage:            http://github.com/aelve/magiclinks
-license:             GPL-2
-license-file:        LICENSE
+homepage:            http://github.com/aelve/shortcut-links
+license:             PublicDomain
 author:              Artyom
 maintainer:          Artyom <yom@artyom.me>
 copyright:           2015–∞ Aelve
@@ -22,12 +21,15 @@ cabal-version:       >=1.10
 
 source-repository head
   type:                git
-  location:            git://github.com/aelve/magiclinks.git
+  location:            git://github.com/aelve/shortcut-links.git
 
 library
-  exposed-modules:     MagicLinks
+  exposed-modules:     ShortcutLinks
+                       ShortcutLinks.All
+                       ShortcutLinks.Utils
   -- other-modules:       
   -- other-extensions:    
   build-depends:       base >= 4.5 && < 5
+                     , text >= 1.1
   hs-source-dirs:      src
   default-language:    Haskell2010
