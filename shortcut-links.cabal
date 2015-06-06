@@ -8,7 +8,8 @@ description:
   (This was a pretty simple example and it doesn't show everything 
   this package can do; for more complicated ones, see the docs.)
 homepage:            http://github.com/aelve/shortcut-links
-license:             PublicDomain
+license:             BSD3
+license-file:        LICENSE
 author:              Artyom
 maintainer:          Artyom <yom@artyom.me>
 copyright:           2015–∞ Aelve
