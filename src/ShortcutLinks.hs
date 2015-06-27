@@ -1,8 +1,8 @@
 module ShortcutLinks
 (
-  allSites,
+  allShortcuts,
 )
 where
 
 
-import ShortcutLinks.All (allSites)
+import ShortcutLinks.All (allShortcuts)

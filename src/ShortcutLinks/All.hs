@@ -5,7 +5,8 @@ OverloadedStrings
 
 module ShortcutLinks.All
 (
-  allSites,
+  Shortcut,
+  allShortcuts,
 
   -- * Major search engines
   google, duckduckgo, yandex, baidu,
@@ -29,12 +30,20 @@ module ShortcutLinks.All
   marmalade, melpa, elpa, packagecontrol, atom, jedit,
   -- ** Browsers
   opera, firefox, chrome,
+
+  -- * Manuals
+  ghcExt,
+
+  -- * Standards
+  rfc,
 )
 where
 
 
 -- General
 import Data.Monoid
+import Control.Applicative
+import Control.Monad
 -- Text
 import qualified Data.Text as T
 import Data.Text (Text)
@@ -43,9 +52,11 @@ import Data.Char
 import ShortcutLinks.Utils
 
 
+type Shortcut = Text -> Either String Text
+
 -- | A list of all functions included in this module.
-allSites :: [Text -> Text]
-allSites = [
+allShortcuts :: [Shortcut]
+allShortcuts = [
   -- search engines
   google, duckduckgo, yandex, baidu,
   -- programming language libraries
@@ -58,272 +69,420 @@ allSites = [
   -- text editors
   marmalade, melpa, elpa, packagecontrol, atom, jedit,
   -- browsers
-  opera, firefox, chrome ]
+  opera, firefox, chrome,
+  -- manuals
+  ghcExt,
+  -- standards
+  rfc ]
 
 -- | <https://google.com Google>
 --
 -- Link example:
 -- @[random query]@ →
 -- <https://www.google.com/search?nfpr=1&q=random+query random query>
-google :: Text -> Text
-google q = "https://google.com/search?nfpr=1&q=" <> replaceSpaces '+' q
+google :: Shortcut
+google q = Right $
+  "https://google.com/search?nfpr=1&q=" <> replaceSpaces '+' q
 
 -- | <https://duckduckgo.com Duckduckgo>
 --
 -- Link example:
 -- @[random query]@ →
 -- <https://duckduckgo.com/?q=random+query random query>
-duckduckgo :: Text -> Text
-duckduckgo q = "https://duckduckgo.com/?q=" <> replaceSpaces '+' q
+duckduckgo :: Shortcut
+duckduckgo q = Right $ "https://duckduckgo.com/?q=" <> replaceSpaces '+' q
 
 -- | <http://yandex.ru Yandex> (Russian search engine)
 --
 -- Link example:
 -- @[random query]@ →
 -- <http://yandex.ru/search/?noreask=1&text=random+query random query>
-yandex :: Text -> Text
-yandex q = "http://yandex.ru/search/?noreask=1&text=" <> replaceSpaces '+' q
+yandex :: Shortcut
+yandex q = Right $ "http://yandex.ru/search/?noreask=1&text=" <> replaceSpaces '+' q
 
 -- | <http://baidu.com Baidu> (Chinese search engine)
 --
 -- Link example:
 -- @[random query]@ →
 -- <http://baidu.com/s?nojc=1&wd=random+query random query>
-baidu :: Text -> Text
-baidu q = "http://baidu.com/s?nojc=1&wd=" <> replaceSpaces '+' q
+baidu :: Shortcut
+baidu q = Right $ "http://baidu.com/s?nojc=1&wd=" <> replaceSpaces '+' q
 
 -- | __Node.js__ – <https://npmjs.com NPM>
 --
 -- Link example:
 -- @[markdown]@ →
 -- <https://www.npmjs.com/package/markdown markdown>
-npm :: Text -> Text
-npm q = "https://npmjs.com/package/" <> q
+npm :: Shortcut
+npm q = Right $ "https://npmjs.com/package/" <> q
 
 -- | __Javascript__ – <http://jamjs.org/packages/#/ Jam>
 --
 -- Link example:
 -- @[pagedown]@ →
 -- <http://jamjs.org/packages/#/details/pagedown pagedown>
-jam :: Text -> Text
-jam q = "http://jamjs.org/packages/#/details/" <> q
+jam :: Shortcut
+jam q = Right $ "http://jamjs.org/packages/#/details/" <> q
 
 -- | __Ruby__ – <https://rubygems.org RubyGems.org>
 --
 -- Link example:
 -- @[github-markdown]@ →
 -- <https://rubygems.org/gems/github-markdown github-markdown>
-rubygems :: Text -> Text
-rubygems q = "https://rubygems.org/gems/" <> q
+rubygems :: Shortcut
+rubygems q = Right $ "https://rubygems.org/gems/" <> q
 
 -- | __Python__ – <https://pypi.python.org/pypi PyPI>
 --
 -- Link example:
 -- @[Markdown]@ →
 -- <https://pypi.python.org/pypi/Markdown Markdown>
-pypi :: Text -> Text
-pypi q = "https://pypi.python.org/pypi/" <> q
+pypi :: Shortcut
+pypi q = Right $ "https://pypi.python.org/pypi/" <> q
 
 -- | __Perl__ – <https://metacpan.org MetaCPAN> (by module)
 --
 -- Link example:
 -- @[Text::Markdown]@ →
 -- <https://metacpan.org/pod/Text::Markdown Text::Markdown>
-metacpanPod :: Text -> Text
-metacpanPod q = "https://metacpan.org/pod/" <> q
+metacpanPod :: Shortcut
+metacpanPod q = Right $ "https://metacpan.org/pod/" <> q
 
 -- | __Perl__ – <https://metacpan.org MetaCPAN> (by release)
 --
 -- Link example:
 -- @[Text-Markdown]@ →
 -- <https://metacpan.org/release/Text-Markdown Text-Markdown>
-metacpanRelease :: Text -> Text
-metacpanRelease q = "https://metacpan.org/release/" <> q
+metacpanRelease :: Shortcut
+metacpanRelease q = Right $ "https://metacpan.org/release/" <> q
 
 -- | __Haskell__ – <https://hackage.haskell.org Hackage>
 --
 -- Link example:
 -- @[cmark]@ →
 -- <https://hackage.haskell.org/package/cmark cmark>
-hackage :: Text -> Text
-hackage q = "https://hackage.haskell.org/package/" <> q
+hackage :: Shortcut
+hackage q = Right $ "https://hackage.haskell.org/package/" <> q
 
 -- | __Rust__ – <https://crates.io Cargo>
 --
 -- Link example:
 -- @[hoedown]@ →
 -- <https://crates.io/crates/hoedown hoedown>
-cargo :: Text -> Text
-cargo q = "https://crates.io/crates/" <> q
+cargo :: Shortcut
+cargo q = Right $ "https://crates.io/crates/" <> q
 
 -- | __PHP__ – <http://pear.php.net PEAR>
 --
 -- Link example:
 -- @[Text_Wiki_Doku]@ →
 -- <http://pear.php.net/package/Text_Wiki_Doku Text_Wiki_Doku>
-pear :: Text -> Text
-pear q = "http://pear.php.net/package/" <> q
+pear :: Shortcut
+pear q = Right $ "http://pear.php.net/package/" <> q
 
 -- | __Dart__ – <https://pub.dartlang.org pub>
 --
 -- Link example:
 -- @[md_proc]@ →
 -- <https://pub.dartlang.org/packages/md_proc md_proc>
-pub :: Text -> Text
-pub q = "https://pub.dartlang.org/packages/" <> q
+pub :: Shortcut
+pub q = Right $ "https://pub.dartlang.org/packages/" <> q
 
 -- | __R__ – <http://cran.r-project.org/web/packages/ CRAN>
 --
 -- Link example:
 -- @[markdown]@ →
 -- <http://cran.r-project.org/web/packages/markdown markdown>
-cran :: Text -> Text
-cran q = "http://cran.r-project.org/web/packages/" <> q
+cran :: Shortcut
+cran q = Right $ "http://cran.r-project.org/web/packages/" <> q
 
 -- | __Erlang__ – <https://hex.pm Hex>
 --
 -- Link example:
 -- @[earmark]@ →
 -- <https://hex.pm/packages/earmark earmark>
-hex :: Text -> Text
-hex q = "https://hex.pm/packages/" <> q
+hex :: Shortcut
+hex q = Right $ "https://hex.pm/packages/" <> q
 
 -- | __SWI-Prolog__ – <http://www.swi-prolog.org/pack/list packages>
 --
 -- Link example:
 -- @[markdown]@ →
 -- <http://www.swi-prolog.org/pack/list?p=markdown markdown>
-swiprolog :: Text -> Text
-swiprolog q = "http://www.swi-prolog.org/pack/list?p=" <> q
+swiprolog :: Shortcut
+swiprolog q = Right $ "http://www.swi-prolog.org/pack/list?p=" <> q
 
 -- | __D__ – <http://code.dlang.org DUB>
 --
 -- Link example:
 -- @[dmarkdown]@ →
 -- <http://code.dlang.org/packages/dmarkdown dmarkdown>
-dub :: Text -> Text
-dub q = "http://code.dlang.org/packages/" <> q
+dub :: Shortcut
+dub q = Right $ "http://code.dlang.org/packages/" <> q
 
 -- | __Bash__ – <http://bpkg.io bpkg>
 --
 -- Link example:
 -- @[markdown]@ →
 -- <http://www.bpkg.io/pkg/markdown markdown>
-bpkg :: Text -> Text
-bpkg q = "http://bpkg.io/pkg/" <> q
+bpkg :: Shortcut
+bpkg q = Right $ "http://bpkg.io/pkg/" <> q
 
 -- | __Android__ – <https://play.google.com Google Play> (formerly Play Market)
 --
 -- Link example:
 -- @[com.opera.mini.native]@ →
 -- <https://play.google.com/store/apps/details?id=com.opera.mini.native Opera Mini>
-googleplay :: Text -> Text
-googleplay q = "https://play.google.com/store/apps/details?id=" <> q
+googleplay :: Shortcut
+googleplay q = Right $ "https://play.google.com/store/apps/details?id=" <> q
 
 -- | <http://braumeister.org Braumeister> (Homebrew formulas)
 --
 -- Link example:
 -- @[multimarkdown]@ →
 -- <http://braumeister.org/formula/multimarkdown multimarkdown>
-braumeister :: Text -> Text
-braumeister q = "http://braumeister.org/formula/" <> q
+braumeister :: Shortcut
+braumeister q = Right $ "http://braumeister.org/formula/" <> q
 
 -- | <http://brewformulas.org Brewformulas> (Homebrew formulas)
 --
 -- Link example:
 -- @[multimarkdown]@ →
 -- <http://brewformulas.org/multimarkdown multimarkdown>
-brewformulas :: Text -> Text
-brewformulas q = "http://brewformulas.org/" <> q
+brewformulas :: Shortcut
+brewformulas q = Right $ "http://brewformulas.org/" <> q
 
 -- | <https://chocolatey.org Chocolatey>
 --
 -- Link example:
 -- @[Opera]@ →
 -- <https://chocolatey.org/packages/Opera Opera>
-chocolatey :: Text -> Text
-chocolatey q = "https://chocolatey.org/packages/" <> q
+chocolatey :: Shortcut
+chocolatey q = Right $ "https://chocolatey.org/packages/" <> q
 
 -- | __Debian__ – <https://debian.org/distrib/packages packages (stable)>
-debian :: Text -> Text
-debian q = "https://packages.debian.org/stable/" <> q
+debian :: Shortcut
+debian q = Right $ "https://packages.debian.org/stable/" <> q
 
 -- | __Arch Linux__ – <https://aur.archlinux.org AUR> (“user repository”)
-aur :: Text -> Text
-aur q = "https://aur.archlinux.org/packages/" <> q
+aur :: Shortcut
+aur q = Right $ "https://aur.archlinux.org/packages/" <> q
 
 -- | __Gentoo__ – <https://packages.gentoo.org packages>
-gentoo :: Text -> Text
-gentoo q = "https://packages.gentoo.org/package/" <> q
+gentoo :: Shortcut
+gentoo q = Right $ "https://packages.gentoo.org/package/" <> q
 
 -- | __openSUSE__ – <http://software.opensuse.org packages>
-opensuse :: Text -> Text
-opensuse q = "http://software.opensuse.org/package/" <> q
+opensuse :: Shortcut
+opensuse q = Right $ "http://software.opensuse.org/package/" <> q
 
 -- | __Linux Mint__ – <http://community.linuxmint.com/software/browse packages>
-mint :: Text -> Text
-mint q = "http://community.linuxmint.com/software/view/" <> q
+mint :: Shortcut
+mint q = Right $ "http://community.linuxmint.com/software/view/" <> q
 
 -- | __Mageia__ – <http://mageia.madb.org packages>
-mageia :: Text -> Text
-mageia q = "http://mageia.madb.org/package/show/name/" <> q
+mageia :: Shortcut
+mageia q = Right $ "http://mageia.madb.org/package/show/name/" <> q
 
 -- | __Fedora__ – <https://admin.fedoraproject.org/pkgdb packages>
-fedora :: Text -> Text
-fedora q = "https://admin.fedoraproject.org/pkgdb/package/" <> q
+fedora :: Shortcut
+fedora q = Right $ "https://admin.fedoraproject.org/pkgdb/package/" <> q
 
 -- | __Emacs__ – <https://marmalade-repo.org Marmalade>
-marmalade :: Text -> Text
-marmalade q = "https://marmalade-repo.org/packages/" <> q
+marmalade :: Shortcut
+marmalade q = Right $ "https://marmalade-repo.org/packages/" <> q
 
 -- | __Emacs__ – <http://melpa.org MELPA>
-melpa :: Text -> Text
-melpa q = "http://melpa.org/#/" <> q
+melpa :: Shortcut
+melpa q = Right $ "http://melpa.org/#/" <> q
 
 -- | __Emacs__ – <https://elpa.gnu.org ELPA>
-elpa :: Text -> Text
-elpa q = "https://elpa.gnu.org/packages/" <> q
+elpa :: Shortcut
+elpa q = Right $ "https://elpa.gnu.org/packages/" <> q
 
 -- | __Sublime Text__ – <https://packagecontrol.io Package Control>
-packagecontrol :: Text -> Text
-packagecontrol q = "https://packagecontrol.io/packages/" <> q
+packagecontrol :: Shortcut
+packagecontrol q = Right $ "https://packagecontrol.io/packages/" <> q
 
 -- | __Atom__ – <https://atom.io/packages packages>
 --
 -- Link example:
 -- @[tidy-markdown]@ →
 -- <https://atom.io/packages/tidy-markdown tidy-markdown>
-atom :: Text -> Text
-atom q = "https://atom.io/packages/" <> q
+atom :: Shortcut
+atom q = Right $ "https://atom.io/packages/" <> q
 
 -- | __jEdit__ – <http://plugins.jedit.org packages>
 --
 -- Link example:
 -- @[MarkdownPlugin]@ →
 -- <http://plugins.jedit.org/plugins/?MarkdownPlugin MarkdownPlugin>
-jedit :: Text -> Text
-jedit q = "http://plugins.jedit.org/plugins/?" <> q
+jedit :: Shortcut
+jedit q = Right $ "http://plugins.jedit.org/plugins/?" <> q
 
 -- | __Opera__ – <https://addons.opera.com extensions>
 --
 -- Link example:
 -- @[amazon-for-opera]@ →
 -- <https://addons.opera.com/extensions/details/amazon-for-opera Amazon for Opera>
-opera :: Text -> Text
-opera q = "https://addons.opera.com/extensions/details/" <> q
+opera :: Shortcut
+opera q = Right $ "https://addons.opera.com/extensions/details/" <> q
 
 -- | __Firefox__ – <https://addons.mozilla.org/firefox Add-ons> (extensions, themes)
 --
 -- Link example:
 -- @[tree-style-tab]@ →
 -- <https://addons.mozilla.org/firefox/addon/tree-style-tab Tree Style Tab>
-firefox :: Text -> Text
-firefox q = "https://addons.mozilla.org/firefox/addon/" <> q
+firefox :: Shortcut
+firefox q = Right $ "https://addons.mozilla.org/firefox/addon/" <> q
 
 -- | __Chrome__ – <https://chrome.google.com/webstore Chrome Web Store> (extensions, apps, themes)
 --
 -- Link example:
 -- @[hdokiejnpimakedhajhdlcegeplioahd]@ →
 -- <https://chrome.google.com/webstore/detail/hdokiejnpimakedhajhdlcegeplioahd LastPass>
-chrome :: Text -> Text
-chrome q = "https://chrome.google.com/webstore/detail/" <> q
+chrome :: Shortcut
+chrome q = Right $ "https://chrome.google.com/webstore/detail/" <> q
+
+-- | GHC extensions
+--
+-- Link example:
+-- @[ViewPatterns]@ →
+-- <https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/syntax-extns.html#view-patterns ViewPatterns>
+ghcExt :: Shortcut
+ghcExt e = case lookup e ghcExtsList of
+  Nothing -> Left (T.unpack ("unknown GHC extension '" <> e <> "'"))
+  Just l  -> Right l
+
+-- | RFCs
+--
+-- Link example:
+-- @[RFC 2026]@ →
+-- <https://tools.ietf.org/html/rfc2026 RFC 2026>
+--
+-- Precise format of recognised text: optional “rfc” (case-insensitive), then
+-- arbitrary amount of spaces and punctuation, then the number. Examples:
+-- “RFC 2026”, “RFC-2026”, “rfc2026”, “rfc #2026”, “2026”, “#2026”.
+rfc :: Shortcut
+rfc x = do
+  let n = T.dropWhile (not . isAlphaNum) $
+            if T.toLower (T.take 3 x) == "rfc" then T.drop 3 x else x
+  unless (T.all isDigit n) $
+    Left "non-digits in RFC number"
+  when (T.null n) $
+    Left "no RFC number"
+  let n' = T.dropWhile (== '0') n
+  when (T.null n') $
+    Left "RFC number can't be 0"
+  return ("https://tools.ietf.org/html/rfc" <> n')
+
+ghcExtsList :: [(Text, Text)]
+ghcExtsList = do
+  let (.=) = (,)
+      base = "https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/"
+      prefix x = map (\(a, b) -> (a, x <> b))
+  prefix base $ concat [
+    prefix "syntax-extns.html" [
+      "DisambiguateRecordFields" .= "#disambiguate-fields",
+      "EmptyCase" .= "#empty-case",
+      "NoImplicitPrelude" .= "#rebindable-syntax",
+      "NegativeLiterals" .= "#negative-literals",
+      "RebindableSyntax" .= "#rebindable-syntax",
+      "PatternGuards" .= "#pattern-guards",
+      "ViewPatterns" .= "#view-patterns",
+      "UnicodeSyntax" .= "#unicode-syntax",
+      "MagicHash" .= "#magic-hash",
+      "ParallelListComp" .= "#parallel-list-comprehensions",
+      "TransformListComp" .= "#generalised-list-comprehensions",
+      "MonadComprehensions" .= "#monad-comprehensions",
+      "ExplicitNamespaces" .= "#explicit-namespaces",
+      "RecursiveDo" .= "#recursive-do-notation",
+      "RecordWildCards" .= "#record-wildcards",
+      "NamedFieldPuns" .= "#record-puns",
+      "PackageImports" .= "#package-imports",
+      "LambdaCase" .= "#lambda-case",
+      "MultiWayIf" .= "#multi-way-if",
+      "NumDecimals" .= "#num-decimals",
+      "BinaryLiterals" .= "#binary-literals",
+      "PostfixOperators" .= "#postfix-operators",
+      "TupleSections" .= "#tuple-sections",
+      "PatternSynonyms" .= "#pattern-synonyms" ],
+
+    prefix "data-type-extensions.html" [
+      "GADTs" .= "#gadt",
+      "GADTSyntax" .= "#gadt-style",
+      "ExistentialQuantification" .= "#existential-quantification",
+      "LiberalTypeSynonyms" .= "#type-synonyms",
+      "EmptyDataDecls" .= "#nullary-types",
+      "DatatypeContexts" .= "#datatype-contexts",
+      "TypeOperators" .= "#type-operators" ],
+
+    prefix "other-type-extensions.html" [
+      "AllowAmbiguousTypes" .= "#ambiguity",
+      "ImplicitParams" .= "#implicit-parameters",
+      "NoMonomorphismRestriction" .= "#monomorphism",
+      "RelaxedPolyRec" .= "#typing-binds",
+      "MonoLocalBinds" .= "#mono-local-binds",
+      "ScopedTypeVariables" .= "#scoped-type-variables",
+      "ExplicitForAll" .= "#explicit-foralls",
+      "PolymorphicComponents" .= "#universal-quantification",
+      "Rank2Types" .= "#universal-quantification",
+      "RankNTypes" .= "#universal-quantification",
+      "ImpredicativeTypes" .= "#impredicative-polymorphism",
+      "KindSignatures" .= "#kinding",
+      "FlexibleContexts" .= "#flexible-contexts" ],
+
+    prefix "type-class-extensions.html" [
+      "IncoherentInstances" .= "#instance-overlap",
+      "OverlappingInstances" .= "#instance-overlap",
+      "OverloadedLists" .= "#overloaded-lists",
+      "OverloadedStrings" .= "#overloaded-strings",
+      "UndecidableInstances" .= "#undecidable-instances",
+      "TypeSynonymInstances" .= "#flexible-instance-head",
+      "FlexibleInstances" .= "#instance-rules",
+      "ConstrainedClassMethods" .= "#class-method-types",
+      "DefaultSignatures" .= "#class-default-signatures",
+      "MultiParamTypeClasses" .= "#multi-param-type-classes",
+      "NullaryTypeClasses" .= "#nullary-type-classes",
+      "InstanceSigs" .= "#instance-sigs",
+      "FunctionalDependencies" .= "#functional-dependencies" ],
+
+    prefix "deriving.html" [
+      "AutoDeriveTypeable" .= "#auto-derive-typeable",
+      "DeriveDataTypeable" .= "#deriving-typeable",
+      "DeriveGeneric" .= "#deriving-typeable",
+      "DeriveFunctor" .= "#deriving-extra",
+      "DeriveTraversable" .= "#deriving-extra",
+      "DeriveFoldable" .= "#deriving-extra",
+      "GeneralizedNewtypeDeriving" .= "#newtype-deriving",
+      "DeriveAnyClass" .= "#derive-any-class",
+      "StandaloneDeriving" .= "#stand-alone-deriving" ],
+
+    prefix "template-haskell.html" [
+      "TemplateHaskell" .= "",
+      "QuasiQuotes" .= "#th-quasiquotation" ],
+
+    prefix "ffi.html" [
+      "ForeignFunctionInterface" .= "",
+      "InterruptibleFFI" .= "#ffi-interruptible",
+      "CApiFFI" .= "#ffi-capi" ],
+
+    prefix "partial-type-signatures.html" [
+      "PartialTypeSignatures" .= "",
+      "NamedWildCards" .= "#named-wildcards" ],
+
+    map (.= "safe-haskell.html") [
+      "Safe",
+      "Trustworthy",
+      "Unsafe" ],
+
+    [ "Arrows" .= "arrow-notation.html",
+      "ConstraintKinds" .= "constraint-kind.html",
+      "DataKinds" .= "promotion.html",
+      "ExtendedDefaultRules" .= "interactive-evaluation.html#extended-default-rules",
+      "TypeFamilies" .= "type-families.html",
+      "PolyKinds" .= "kind-polymorphism.html",
+      "BangPatterns" .= "bang-patterns.html",
+      "CPP" .= "options-phases.html#c-pre-processor",
+      "RoleAnnotations" .= "roles.html#role-annotations",
+      "UnboxedTuples" .= "primitives.html#unboxed-tuples" ] ]
