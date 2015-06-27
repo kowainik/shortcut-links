@@ -8,6 +8,9 @@ module ShortcutLinks.All
   Shortcut,
   allShortcuts,
 
+  -- * Encyclopedias
+  wikipedia,
+  
   -- * Major search engines
   google, duckduckgo, yandex, baidu,
 
@@ -44,6 +47,7 @@ where
 import Data.Monoid
 import Control.Applicative
 import Control.Monad
+import Data.Maybe
 -- Text
 import qualified Data.Text as T
 import Data.Text (Text)
@@ -57,6 +61,8 @@ type Shortcut = Maybe Text -> Text -> Either String Text
 -- | A list of all functions included in this module.
 allShortcuts :: [Shortcut]
 allShortcuts = [
+  -- encyclopedias
+  wikipedia,
   -- search engines
   google, duckduckgo, yandex, baidu,
   -- programming language libraries
@@ -376,6 +382,21 @@ rfc _ x = do
   when (T.null n') $
     Left "RFC number can't be 0"
   return ("https://tools.ietf.org/html/rfc" <> n')
+
+-- | Wikipedia
+--
+-- Link example:
+-- @[grey-headed flying fox]@ →
+-- <https://en.wikipedia.org/wiki/Grey-headed_flying_fox>
+--
+-- Optionally takes a language code (“ru”, “de”, “it”, etc) – without it,
+-- English Wikipedia is assumed.
+wikipedia :: Shortcut
+wikipedia mbLang q = Right $
+  mconcat ["https://", lang, ".wikipedia.org/wiki/", q']
+  where
+    lang = fromMaybe "en" mbLang
+    q'   = titleFirst (replaceSpaces '_' q)
 
 ghcExtsList :: [(Text, Text)]
 ghcExtsList = do
