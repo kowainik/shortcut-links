@@ -27,7 +27,7 @@ module ShortcutLinks.All
   -- ** Windows
   chocolatey,
   -- ** OS X
-  braumeister, brewformulas,
+  braumeister,
   -- ** Linux
   debian, aur, mint, fedora, gentoo, opensuse, mageia,
 
@@ -74,7 +74,7 @@ allShortcuts = [
   npm, jam, rubygems, pypi, metacpanPod, metacpanRelease, hackage, cargo,
   pub, hex, cran, swiprolog, dub, bpkg, pear,
   -- OS
-  googleplay, chocolatey, braumeister, brewformulas,
+  googleplay, chocolatey, braumeister,
   -- OS – Linux
   debian, aur, mint, fedora, gentoo, opensuse, mageia,
   -- text editors
@@ -277,14 +277,6 @@ googleplay _ q = Right $ "https://play.google.com/store/apps/details?id=" <> q
 -- <http://braumeister.org/formula/multimarkdown multimarkdown>
 braumeister :: Shortcut
 braumeister _ q = Right $ "http://braumeister.org/formula/" <> q
-
--- | <http://brewformulas.org Brewformulas> (Homebrew formulas)
---
--- Link example:
--- @[multimarkdown]@ →
--- <http://brewformulas.org/multimarkdown multimarkdown>
-brewformulas :: Shortcut
-brewformulas _ q = Right $ "http://brewformulas.org/" <> q
 
 -- | <https://chocolatey.org Chocolatey>
 --
