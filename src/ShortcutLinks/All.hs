@@ -9,8 +9,8 @@ module ShortcutLinks.All
   allShortcuts,
 
   -- * Encyclopedias
-  wikipedia,
-  
+  wikipedia, tvtropes,
+
   -- * Social networks
   facebook, vk,
 
@@ -65,7 +65,7 @@ type Shortcut = Maybe Text -> Text -> Either String Text
 allShortcuts :: [Shortcut]
 allShortcuts = [
   -- encyclopedias
-  wikipedia,
+  wikipedia, tvtropes,
   -- social networks
   facebook, vk,
   -- search engines
@@ -416,6 +416,25 @@ wikipedia mbLang q = Right $
   where
     lang = fromMaybe "en" mbLang
     q'   = titleFirst (replaceSpaces '_' q)
+
+-- | TV Tropes
+--
+-- Link example #1:
+-- @[so bad, it's good](\@tvtropes)@ →
+-- <http://tvtropes.org/pmwiki/pmwiki.php/Main/SoBadItsGood>
+--
+-- Link example #2:
+-- @[Elementary](\@tvtropes(series))@ →
+-- <http://tvtropes.org/pmwiki/pmwiki.php/Series/Elementary>
+tvtropes :: Shortcut
+tvtropes mbCategory q = Right $
+  mconcat ["http://tvtropes.org/pmwiki/pmwiki.php/", category, "/", q']
+  where
+    category = maybe "Main" titleFirst mbCategory
+    isSep c = (isSpace c || isPunctuation c) && c /= '\''
+    -- Break into words, transform each word like “it's” → “Its”, and concat.
+    -- Note that e.g. “man-made” is considered 2 separate words.
+    q' = T.concat $ map (titleFirst . T.filter isAlphaNum) (T.split isSep q)
 
 ghcExtsList :: [(Text, Text)]
 ghcExtsList = do
