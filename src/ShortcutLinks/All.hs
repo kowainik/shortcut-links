@@ -11,6 +11,9 @@ module ShortcutLinks.All
   -- * Encyclopedias
   wikipedia,
   
+  -- * Social networks
+  facebook, vk,
+
   -- * Major search engines
   google, duckduckgo, yandex, baidu,
 
@@ -63,6 +66,8 @@ allShortcuts :: [Shortcut]
 allShortcuts = [
   -- encyclopedias
   wikipedia,
+  -- social networks
+  facebook, vk,
   -- search engines
   google, duckduckgo, yandex, baidu,
   -- programming language libraries
@@ -80,6 +85,28 @@ allShortcuts = [
   ghcExt,
   -- standards
   rfc ]
+
+-- | <https://facebook.com Facebook>
+--
+-- Link example:
+-- @[green]@ →
+-- <https://facebook.com/green>
+facebook :: Shortcut
+facebook _ q = Right $ "https://facebook.com/" <> q
+
+-- | <https://vk.com Vkontakte> (Вконтакте)
+--
+-- Link example #1:
+-- @[green]@ →
+-- <https://vk.com/green>
+--
+-- Link example #2:
+--
+-- @[1337]@ →
+-- <https://vk.com/id1337>
+vk :: Shortcut
+vk _ q = Right $ "https://vk.com/" <> q'
+  where q' = if not (T.null q) && isDigit (T.head q) then "id" <> q else q
 
 -- | <https://google.com Google>
 --
