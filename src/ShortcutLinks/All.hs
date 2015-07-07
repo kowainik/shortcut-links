@@ -99,7 +99,7 @@ allShortcuts = [
 -- | <https://facebook.com Facebook>
 --
 -- Link example:
--- @[green]@ →
+-- @[green](\@fb)@ →
 -- <https://facebook.com/green>
 facebook :: Shortcut
 facebook _ q = Right $ "https://facebook.com/" <> q
@@ -107,12 +107,12 @@ facebook _ q = Right $ "https://facebook.com/" <> q
 -- | <https://vk.com Vkontakte> (Вконтакте)
 --
 -- Link example #1:
--- @[green]@ →
+-- @[green](\@vk)@ →
 -- <https://vk.com/green>
 --
 -- Link example #2:
 --
--- @[1337]@ →
+-- @[1337](\@vk)@ →
 -- <https://vk.com/id1337>
 vk :: Shortcut
 vk _ q = Right $ "https://vk.com/" <> q'
@@ -161,7 +161,7 @@ juick _ q
 -- | <https://google.com Google>
 --
 -- Link example:
--- @[random query]@ →
+-- @[random query](\@google)@ →
 -- <https://www.google.com/search?nfpr=1&q=random+query random query>
 google :: Shortcut
 google _ q = Right $
@@ -170,7 +170,7 @@ google _ q = Right $
 -- | <https://duckduckgo.com Duckduckgo>
 --
 -- Link example:
--- @[random query]@ →
+-- @[random query](\@ddg)@ →
 -- <https://duckduckgo.com/?q=random+query random query>
 duckduckgo :: Shortcut
 duckduckgo _ q = Right $ "https://duckduckgo.com/?q=" <> replaceSpaces '+' q
@@ -178,7 +178,7 @@ duckduckgo _ q = Right $ "https://duckduckgo.com/?q=" <> replaceSpaces '+' q
 -- | <http://yandex.ru Yandex> (Russian search engine)
 --
 -- Link example:
--- @[random query]@ →
+-- @[random query](\@yandex)@ →
 -- <http://yandex.ru/search/?noreask=1&text=random+query random query>
 yandex :: Shortcut
 yandex _ q = Right $
@@ -187,7 +187,7 @@ yandex _ q = Right $
 -- | <http://baidu.com Baidu> (Chinese search engine)
 --
 -- Link example:
--- @[random query]@ →
+-- @[random query](\@baidu)@ →
 -- <http://baidu.com/s?nojc=1&wd=random+query random query>
 baidu :: Shortcut
 baidu _ q = Right $ "http://baidu.com/s?nojc=1&wd=" <> replaceSpaces '+' q
@@ -195,7 +195,7 @@ baidu _ q = Right $ "http://baidu.com/s?nojc=1&wd=" <> replaceSpaces '+' q
 -- | __Node.js__ – <https://npmjs.com NPM>
 --
 -- Link example:
--- @[markdown]@ →
+-- @[markdown](\@npm)@ →
 -- <https://www.npmjs.com/package/markdown markdown>
 npm :: Shortcut
 npm _ q = Right $ "https://npmjs.com/package/" <> q
@@ -203,7 +203,7 @@ npm _ q = Right $ "https://npmjs.com/package/" <> q
 -- | __Javascript__ – <http://jamjs.org/packages/#/ Jam>
 --
 -- Link example:
--- @[pagedown]@ →
+-- @[pagedown](\@jam)@ →
 -- <http://jamjs.org/packages/#/details/pagedown pagedown>
 jam :: Shortcut
 jam _ q = Right $ "http://jamjs.org/packages/#/details/" <> q
@@ -211,7 +211,7 @@ jam _ q = Right $ "http://jamjs.org/packages/#/details/" <> q
 -- | __Ruby__ – <https://rubygems.org RubyGems.org>
 --
 -- Link example:
--- @[github-markdown]@ →
+-- @[github-markdown](\@gem)@ →
 -- <https://rubygems.org/gems/github-markdown github-markdown>
 rubygems :: Shortcut
 rubygems _ q = Right $ "https://rubygems.org/gems/" <> q
@@ -219,7 +219,7 @@ rubygems _ q = Right $ "https://rubygems.org/gems/" <> q
 -- | __Python__ – <https://pypi.python.org/pypi PyPI>
 --
 -- Link example:
--- @[Markdown]@ →
+-- @[Markdown](\@pypi)@ →
 -- <https://pypi.python.org/pypi/Markdown Markdown>
 pypi :: Shortcut
 pypi _ q = Right $ "https://pypi.python.org/pypi/" <> q
@@ -227,7 +227,7 @@ pypi _ q = Right $ "https://pypi.python.org/pypi/" <> q
 -- | __Perl__ – <https://metacpan.org MetaCPAN> (by module)
 --
 -- Link example:
--- @[Text::Markdown]@ →
+-- @[Text::Markdown](\@cpan)@ →
 -- <https://metacpan.org/pod/Text::Markdown Text::Markdown>
 metacpanPod :: Shortcut
 metacpanPod _ q = Right $ "https://metacpan.org/pod/" <> q
@@ -235,7 +235,7 @@ metacpanPod _ q = Right $ "https://metacpan.org/pod/" <> q
 -- | __Perl__ – <https://metacpan.org MetaCPAN> (by release)
 --
 -- Link example:
--- @[Text-Markdown]@ →
+-- @[Text-Markdown](\@cpan-r)@ →
 -- <https://metacpan.org/release/Text-Markdown Text-Markdown>
 metacpanRelease :: Shortcut
 metacpanRelease _ q = Right $ "https://metacpan.org/release/" <> q
@@ -243,7 +243,7 @@ metacpanRelease _ q = Right $ "https://metacpan.org/release/" <> q
 -- | __Haskell__ – <https://hackage.haskell.org Hackage>
 --
 -- Link example:
--- @[cmark]@ →
+-- @[cmark](\@hackage)@ →
 -- <https://hackage.haskell.org/package/cmark cmark>
 hackage :: Shortcut
 hackage _ q = Right $ "https://hackage.haskell.org/package/" <> q
@@ -251,7 +251,7 @@ hackage _ q = Right $ "https://hackage.haskell.org/package/" <> q
 -- | __Rust__ – <https://crates.io Cargo>
 --
 -- Link example:
--- @[hoedown]@ →
+-- @[hoedown](\@cargo)@ →
 -- <https://crates.io/crates/hoedown hoedown>
 cargo :: Shortcut
 cargo _ q = Right $ "https://crates.io/crates/" <> q
@@ -259,7 +259,7 @@ cargo _ q = Right $ "https://crates.io/crates/" <> q
 -- | __PHP__ – <http://pear.php.net PEAR>
 --
 -- Link example:
--- @[Text_Wiki_Doku]@ →
+-- @[Text_Wiki_Doku](\@pear)@ →
 -- <http://pear.php.net/package/Text_Wiki_Doku Text_Wiki_Doku>
 pear :: Shortcut
 pear _ q = Right $ "http://pear.php.net/package/" <> q
@@ -267,7 +267,7 @@ pear _ q = Right $ "http://pear.php.net/package/" <> q
 -- | __Dart__ – <https://pub.dartlang.org pub>
 --
 -- Link example:
--- @[md_proc]@ →
+-- @[md_proc](\@pub)@ →
 -- <https://pub.dartlang.org/packages/md_proc md_proc>
 pub :: Shortcut
 pub _ q = Right $ "https://pub.dartlang.org/packages/" <> q
@@ -275,7 +275,7 @@ pub _ q = Right $ "https://pub.dartlang.org/packages/" <> q
 -- | __R__ – <http://cran.r-project.org/web/packages/ CRAN>
 --
 -- Link example:
--- @[markdown]@ →
+-- @[markdown](\@cran)@ →
 -- <http://cran.r-project.org/web/packages/markdown markdown>
 cran :: Shortcut
 cran _ q = Right $ "http://cran.r-project.org/web/packages/" <> q
@@ -283,7 +283,7 @@ cran _ q = Right $ "http://cran.r-project.org/web/packages/" <> q
 -- | __Erlang__ – <https://hex.pm Hex>
 --
 -- Link example:
--- @[earmark]@ →
+-- @[earmark](\@hex)@ →
 -- <https://hex.pm/packages/earmark earmark>
 hex :: Shortcut
 hex _ q = Right $ "https://hex.pm/packages/" <> q
@@ -291,7 +291,7 @@ hex _ q = Right $ "https://hex.pm/packages/" <> q
 -- | __SWI-Prolog__ – <http://www.swi-prolog.org/pack/list packages>
 --
 -- Link example:
--- @[markdown]@ →
+-- @[markdown](\@swi)@ →
 -- <http://www.swi-prolog.org/pack/list?p=markdown markdown>
 swiprolog :: Shortcut
 swiprolog _ q = Right $ "http://www.swi-prolog.org/pack/list?p=" <> q
@@ -299,7 +299,7 @@ swiprolog _ q = Right $ "http://www.swi-prolog.org/pack/list?p=" <> q
 -- | __D__ – <http://code.dlang.org DUB>
 --
 -- Link example:
--- @[dmarkdown]@ →
+-- @[dmarkdown](\@dub)@ →
 -- <http://code.dlang.org/packages/dmarkdown dmarkdown>
 dub :: Shortcut
 dub _ q = Right $ "http://code.dlang.org/packages/" <> q
@@ -307,7 +307,7 @@ dub _ q = Right $ "http://code.dlang.org/packages/" <> q
 -- | __Bash__ – <http://bpkg.io bpkg>
 --
 -- Link example:
--- @[markdown]@ →
+-- @[markdown](\@bpkg)@ →
 -- <http://www.bpkg.io/pkg/markdown markdown>
 bpkg :: Shortcut
 bpkg _ q = Right $ "http://bpkg.io/pkg/" <> q
@@ -367,7 +367,7 @@ gitlab mbOwner q = case mbOwner of
 -- | __Android__ – <https://play.google.com Google Play> (formerly Play Market)
 --
 -- Link example:
--- @[com.opera.mini.native]@ →
+-- @[com.opera.mini.native](\@gplay)@ →
 -- <https://play.google.com/store/apps/details?id=com.opera.mini.native Opera Mini>
 googleplay :: Shortcut
 googleplay _ q = Right $ "https://play.google.com/store/apps/details?id=" <> q
@@ -375,7 +375,7 @@ googleplay _ q = Right $ "https://play.google.com/store/apps/details?id=" <> q
 -- | <http://braumeister.org Braumeister> (Homebrew formulas)
 --
 -- Link example:
--- @[multimarkdown]@ →
+-- @[multimarkdown](\@brew)@ →
 -- <http://braumeister.org/formula/multimarkdown multimarkdown>
 braumeister :: Shortcut
 braumeister _ q = Right $ "http://braumeister.org/formula/" <> q
@@ -383,7 +383,7 @@ braumeister _ q = Right $ "http://braumeister.org/formula/" <> q
 -- | <https://chocolatey.org Chocolatey>
 --
 -- Link example:
--- @[Opera]@ →
+-- @[Opera](\@chocolatey\)@ →
 -- <https://chocolatey.org/packages/Opera Opera>
 chocolatey :: Shortcut
 chocolatey _ q = Right $ "https://chocolatey.org/packages/" <> q
@@ -435,7 +435,7 @@ packagecontrol _ q = Right $ "https://packagecontrol.io/packages/" <> q
 -- | __Atom__ – <https://atom.io/packages packages>
 --
 -- Link example:
--- @[tidy-markdown]@ →
+-- @[tidy-markdown](\@atom)@ →
 -- <https://atom.io/packages/tidy-markdown tidy-markdown>
 atom :: Shortcut
 atom _ q = Right $ "https://atom.io/packages/" <> q
@@ -443,7 +443,7 @@ atom _ q = Right $ "https://atom.io/packages/" <> q
 -- | __jEdit__ – <http://plugins.jedit.org packages>
 --
 -- Link example:
--- @[MarkdownPlugin]@ →
+-- @[MarkdownPlugin](\@jedit)@ →
 -- <http://plugins.jedit.org/plugins/?MarkdownPlugin MarkdownPlugin>
 jedit :: Shortcut
 jedit _ q = Right $ "http://plugins.jedit.org/plugins/?" <> q
@@ -475,7 +475,7 @@ chrome _ q = Right $ "https://chrome.google.com/webstore/detail/" <> q
 -- | GHC extensions
 --
 -- Link example:
--- @[ViewPatterns]@ →
+-- @[ViewPatterns](\@ghcext)@ →
 -- <https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/syntax-extns.html#view-patterns ViewPatterns>
 ghcExt :: Shortcut
 ghcExt _ e = case lookup e ghcExtsList of
@@ -485,7 +485,7 @@ ghcExt _ e = case lookup e ghcExtsList of
 -- | RFCs
 --
 -- Link example:
--- @[RFC 2026]@ →
+-- @[RFC 2026](\@rfc)@ →
 -- <https://tools.ietf.org/html/rfc2026 RFC 2026>
 --
 -- Precise format of recognised text: optional “rfc” (case-insensitive), then
@@ -506,12 +506,13 @@ rfc _ x = do
 
 -- | Wikipedia
 --
--- Link example:
--- @[grey-headed flying fox]@ →
+-- Link example #1:
+-- @[grey-headed flying fox](\@w)@ →
 -- <https://en.wikipedia.org/wiki/Grey-headed_flying_fox>
---
--- Optionally takes a language code (“ru”, “de”, “it”, etc) – without it,
--- English Wikipedia is assumed.
+-- 
+-- Link example #2:
+-- @[Haskell](\@w(ru))@ →
+-- <https://ru.wikipedia.org/wiki/Haskell>
 wikipedia :: Shortcut
 wikipedia mbLang q = Right $
   mconcat ["https://", lang, ".wikipedia.org/wiki/", q']
