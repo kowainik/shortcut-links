@@ -14,6 +14,9 @@ module ShortcutLinks.All
   -- * Social networks
   facebook, vk,
 
+  -- * Microblogs
+  twitter, juick,
+
   -- * Major search engines
   google, duckduckgo, yandex, baidu,
 
@@ -71,6 +74,8 @@ allShortcuts = [
   wikipedia, tvtropes,
   -- social networks
   facebook, vk,
+  -- microblogs
+  twitter, juick,
   -- search engines
   google, duckduckgo, yandex, baidu,
   -- programming language libraries
@@ -112,6 +117,46 @@ facebook _ q = Right $ "https://facebook.com/" <> q
 vk :: Shortcut
 vk _ q = Right $ "https://vk.com/" <> q'
   where q' = if not (T.null q) && isDigit (T.head q) then "id" <> q else q
+
+-- | Twitter
+--
+-- Link example (username):
+-- @[kmett](\@t)@ →
+-- <https://twitter.com/kmett kmett>
+-- 
+-- Link example (username with @\@@):
+-- @[\@kmett](\@t)@ →
+-- <https://twitter.com/kmett \@kmett>
+--
+-- Link example (hashtag):
+-- @[#haskell](\@t)@ →
+-- <https://twitter.com/hashtag/haskell #haskell>
+twitter :: Shortcut
+twitter _ "" = Right "https://twitter.com"
+twitter _ q
+  | T.head q == '#' = Right $ "https://twitter.com/hashtag/" <> T.tail q
+  | T.head q == '@' = Right $ "https://twitter.com/" <> T.tail q
+  | otherwise       = Right $ "https://twitter.com/" <> q
+
+-- | Juick
+--
+-- Link example (username):
+-- @[thefish](\@juick)@ →
+-- <https://juick.com/thefish/ thefish>
+-- 
+-- Link example (username with @\@@):
+-- @[\@thefish](\@juick)@ →
+-- <https://juick.com/thefish/ \@thefish>
+--
+-- Link example (tag):
+-- @[*Haskell](\@juick)@ →
+-- <https://juick.com/tag/Haskell *Haskell>
+juick :: Shortcut
+juick _ "" = Right "https://juick.com"
+juick _ q
+  | T.head q == '*' = Right $ "https://juick.com/tag/" <> T.tail q
+  | T.head q == '@' = Right $ "https://juick.com/" <> T.tail q
+  | otherwise       = Right $ "https://juick.com/" <> q
 
 -- | <https://google.com Google>
 --
