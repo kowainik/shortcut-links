@@ -21,6 +21,9 @@ module ShortcutLinks.All
   npm, jam, rubygems, pypi, metacpanPod, metacpanRelease, hackage, cargo,
   pub, hex, cran, swiprolog, dub, bpkg, pear,
 
+  -- * Code hosting
+  github, gitlab, bitbucket,
+
   -- * OS packages
   -- ** Mobile
   googleplay,
@@ -73,6 +76,8 @@ allShortcuts = [
   -- programming language libraries
   npm, jam, rubygems, pypi, metacpanPod, metacpanRelease, hackage, cargo,
   pub, hex, cran, swiprolog, dub, bpkg, pear,
+  -- code hosting
+  github, gitlab, bitbucket,
   -- OS
   googleplay, chocolatey, braumeister,
   -- OS – Linux
@@ -261,6 +266,58 @@ dub _ q = Right $ "http://code.dlang.org/packages/" <> q
 -- <http://www.bpkg.io/pkg/markdown markdown>
 bpkg :: Shortcut
 bpkg _ q = Right $ "http://bpkg.io/pkg/" <> q
+
+-- | Github
+--
+-- Link example:
+-- @[aelve/shortcut-links](\@gh)@ →
+-- <https://github.com/aelve/shortcut-links aelve/shortcut-links>
+--
+-- The repository owner can also be given as an option:
+--
+-- @[shortcut-links](\@gh(aelve))@ →
+-- <https://github.com/aelve/shortcut-links shortcut-links>
+github :: Shortcut
+github mbOwner q = case mbOwner of
+  Nothing    -> Right $ "https://github.com/" <> q
+  Just owner -> Right $ "https://github.com/" <> owner <> "/" <> q
+
+-- | Bitbucket
+--
+-- Link example:
+-- @[bos/text](\@bitbucket)@ →
+-- <https://bitbucket.org/bos/text bos/text>
+--
+-- The repository owner can also be given as an option:
+--
+-- @[text](\@bitbucket(bos))@ →
+-- <https://bitbucket.org/bos/text text>
+bitbucket :: Shortcut
+bitbucket mbOwner q = case mbOwner of
+  Nothing    -> Right $ "https://bitbucket.org/" <> q
+  Just owner -> Right $ "https://bitbucket.org/" <> owner <> "/" <> q
+
+-- | Gitlab
+--
+-- Link example:
+-- @[learnyou/lysa](\@gitlab)@ →
+-- <https://gitlab.com/learnyou/lysa learnyou/lysa>
+--
+-- The repository owner can also be given as an option:
+--
+-- @[lysa](\@gitlab(learnyou))@ →
+-- <https://gitlab.com/learnyou/lysa lysa>
+--
+-- Note that links like <https://gitlab.com/owner> work but are going to be
+-- automatically redirected to either <https://gitlab.com/u/owner> or
+-- <https://gitlab.com/groups/owner>, depending on whether it's a user or a
+-- team. So, it's a case when the “links have to look as authentic as
+-- possible” principle is violated (but c'mon, this “u” thing looks ugly
+-- anyway).
+gitlab :: Shortcut
+gitlab mbOwner q = case mbOwner of
+  Nothing    -> Right $ "https://gitlab.com/" <> q
+  Just owner -> Right $ "https://gitlab.com/" <> owner <> "/" <> q
 
 -- | __Android__ – <https://play.google.com Google Play> (formerly Play Market)
 --
