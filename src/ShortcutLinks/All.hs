@@ -12,7 +12,7 @@ module ShortcutLinks.All
   wikipedia, tvtropes,
 
   -- * Social networks
-  facebook, vk,
+  facebook, vk, googleplus,
 
   -- * Microblogs
   twitter, juick,
@@ -73,7 +73,7 @@ allShortcuts = [
   -- encyclopedias
   wikipedia, tvtropes,
   -- social networks
-  facebook, vk,
+  facebook, vk, googleplus,
   -- microblogs
   twitter, juick,
   -- search engines
@@ -117,6 +117,36 @@ facebook _ q = Right $ "https://facebook.com/" <> q
 vk :: Shortcut
 vk _ q = Right $ "https://vk.com/" <> q'
   where q' = if not (T.null q) && isDigit (T.head q) then "id" <> q else q
+
+-- | Google+
+--
+-- Link example (username):
+-- @[SergeyBrin](\@gp)@ →
+-- <https://plus.google.com/+SergeyBrin SergeyBrin>
+-- 
+-- Link example (username with @+@):
+-- @[+SergeyBrin](\@gp)@ →
+-- <https://plus.google.com/+SergeyBrin +SergeyBrin>
+--
+-- Link example (full name, will just be concatenated):
+-- @[Sergey Brin](\@gp)@ →
+-- <https://plus.google.com/+SergeyBrin Sergey Brin>
+--
+-- Link example (ID):
+-- @[Sergey Brin](\@gp:109813896768294978296)@ →
+-- <https://plus.google.com/109813896768294978296 Sergey Brin>
+--
+-- Link example (hashtag):
+-- @[#Australia](\@gp)@ →
+-- <https://plus.google.com/explore/Australia #Australia>
+googleplus :: Shortcut
+googleplus _ q
+  | T.null q        = Right url
+  | T.head q == '#' = Right $ url <> "explore/" <> T.tail q
+  | T.head q == '+' = Right $ url <> q
+  | T.all isDigit q = Right $ url <> q
+  | otherwise       = Right $ url <> "+" <> T.concat (T.words q)
+  where url = "https://plus.google.com/"
 
 -- | Twitter
 --
