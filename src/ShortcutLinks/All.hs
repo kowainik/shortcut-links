@@ -162,11 +162,12 @@ googleplus _ q
 -- @[#haskell](\@t)@ →
 -- <https://twitter.com/hashtag/haskell #haskell>
 twitter :: Shortcut
-twitter _ "" = Right "https://twitter.com"
 twitter _ q
-  | T.head q == '#' = Right $ "https://twitter.com/hashtag/" <> T.tail q
-  | T.head q == '@' = Right $ "https://twitter.com/" <> T.tail q
-  | otherwise       = Right $ "https://twitter.com/" <> q
+  | T.null q        = Right url
+  | T.head q == '#' = Right $ url <> "hashtag/" <> T.tail q
+  | T.head q == '@' = Right $ url <> T.tail q
+  | otherwise       = Right $ url <> q
+  where url = "https://twitter.com/"
 
 -- | Juick
 --
@@ -182,11 +183,12 @@ twitter _ q
 -- @[*Haskell](\@juick)@ →
 -- <https://juick.com/tag/Haskell *Haskell>
 juick :: Shortcut
-juick _ "" = Right "https://juick.com"
 juick _ q
-  | T.head q == '*' = Right $ "https://juick.com/tag/" <> T.tail q
-  | T.head q == '@' = Right $ "https://juick.com/" <> T.tail q
-  | otherwise       = Right $ "https://juick.com/" <> q
+  | T.null q        = Right url
+  | T.head q == '*' = Right $ url <> "tag/" <> T.tail q
+  | T.head q == '@' = Right $ url <> T.tail q
+  | otherwise       = Right $ url <> q
+  where url = "https://juick.com/"
 
 -- | <https://google.com Google>
 --
