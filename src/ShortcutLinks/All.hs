@@ -106,11 +106,11 @@ facebook _ q = Right $ "https://facebook.com/" <> q
 
 -- | <https://vk.com Vkontakte> (Вконтакте)
 --
--- Link example #1:
+-- Link example (username):
 -- @[green](\@vk)@ →
 -- <https://vk.com/green>
 --
--- Link example #2:
+-- Link example (ID):
 --
 -- @[1337](\@vk)@ →
 -- <https://vk.com/id1337>
@@ -118,7 +118,7 @@ vk :: Shortcut
 vk _ q = Right $ "https://vk.com/" <> q'
   where q' = if not (T.null q) && isDigit (T.head q) then "id" <> q else q
 
--- | Google+
+-- | <https://plus.google.com Google+>
 --
 -- Link example (username):
 -- @[SergeyBrin](\@gp)@ →
@@ -128,7 +128,7 @@ vk _ q = Right $ "https://vk.com/" <> q'
 -- @[+SergeyBrin](\@gp)@ →
 -- <https://plus.google.com/+SergeyBrin +SergeyBrin>
 --
--- Link example (full name, will just be concatenated):
+-- Link example (full name – will just be concatenated):
 -- @[Sergey Brin](\@gp)@ →
 -- <https://plus.google.com/+SergeyBrin Sergey Brin>
 --
@@ -148,7 +148,7 @@ googleplus _ q
   | otherwise       = Right $ url <> "+" <> T.concat (T.words q)
   where url = "https://plus.google.com/"
 
--- | Twitter
+-- | <https://twitter.com Twitter>
 --
 -- Link example (username):
 -- @[kmett](\@t)@ →
@@ -169,7 +169,7 @@ twitter _ q
   | otherwise       = Right $ url <> q
   where url = "https://twitter.com/"
 
--- | Juick
+-- | <https://juick.com Juick>
 --
 -- Link example (username):
 -- @[thefish](\@juick)@ →
@@ -344,7 +344,7 @@ dub _ q = Right $ "http://code.dlang.org/packages/" <> q
 bpkg :: Shortcut
 bpkg _ q = Right $ "http://bpkg.io/pkg/" <> q
 
--- | Github
+-- | <https://github.com Github>
 --
 -- Link example:
 -- @[aelve/shortcut-links](\@gh)@ →
@@ -359,7 +359,7 @@ github mbOwner q = case mbOwner of
   Nothing    -> Right $ "https://github.com/" <> q
   Just owner -> Right $ "https://github.com/" <> owner <> "/" <> q
 
--- | Bitbucket
+-- | <https://bitbucket.org Bitbucket>
 --
 -- Link example:
 -- @[bos/text](\@bitbucket)@ →
@@ -374,7 +374,7 @@ bitbucket mbOwner q = case mbOwner of
   Nothing    -> Right $ "https://bitbucket.org/" <> q
   Just owner -> Right $ "https://bitbucket.org/" <> owner <> "/" <> q
 
--- | Gitlab
+-- | <https://gitlab.com Gitlab>
 --
 -- Link example:
 -- @[learnyou/lysa](\@gitlab)@ →
@@ -504,7 +504,7 @@ firefox _ q = Right $ "https://addons.mozilla.org/firefox/addon/" <> q
 chrome :: Shortcut
 chrome _ q = Right $ "https://chrome.google.com/webstore/detail/" <> q
 
--- | GHC extensions
+-- | <https://www.haskell.org/ghc/ GHC> (Glasgow Haskell Compiler) extensions
 --
 -- Link example:
 -- @[ViewPatterns](\@ghcext)@ →
@@ -514,7 +514,7 @@ ghcExt _ e = case lookup e ghcExtsList of
   Nothing -> Left (T.unpack ("unknown GHC extension '" <> e <> "'"))
   Just l  -> Right l
 
--- | RFCs
+-- | <https://www.ietf.org/rfc.html RFCs>
 --
 -- Link example:
 -- @[RFC 2026](\@rfc)@ →
@@ -536,13 +536,13 @@ rfc _ x = do
     Left "RFC number can't be 0"
   return ("https://tools.ietf.org/html/rfc" <> n')
 
--- | Wikipedia
+-- | <https://wikipedia.org/ Wikipedia>
 --
--- Link example #1:
+-- Link example (English Wikipedia):
 -- @[grey-headed flying fox](\@w)@ →
 -- <https://en.wikipedia.org/wiki/Grey-headed_flying_fox>
 -- 
--- Link example #2:
+-- Link example (Russian Wikipedia, but any language code can be used):
 -- @[Haskell](\@w(ru))@ →
 -- <https://ru.wikipedia.org/wiki/Haskell>
 wikipedia :: Shortcut
@@ -552,15 +552,18 @@ wikipedia mbLang q = Right $
     lang = fromMaybe "en" mbLang
     q'   = titleFirst (replaceSpaces '_' q)
 
--- | TV Tropes
+-- | <http://tvtropes.org TV Tropes>
 --
--- Link example #1:
+-- Link example (trope):
 -- @[so bad, it's good](\@tvtropes)@ →
 -- <http://tvtropes.org/pmwiki/pmwiki.php/Main/SoBadItsGood>
 --
--- Link example #2:
+-- Link example (series):
 -- @[Elementary](\@tvtropes(series))@ →
 -- <http://tvtropes.org/pmwiki/pmwiki.php/Series/Elementary>
+--
+-- You can give anything as a category instead of “series”, it'll be
+-- capitalised but nothing else.
 tvtropes :: Shortcut
 tvtropes mbCategory q = Right $
   mconcat ["http://tvtropes.org/pmwiki/pmwiki.php/", category, "/", q']
