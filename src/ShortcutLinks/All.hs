@@ -48,8 +48,8 @@ module ShortcutLinks.All
   -- * Manuals
   ghcExt,
 
-  -- * Standards
-  rfc,
+  -- * Standards and databases
+  rfc, cve,
 )
 where
 
@@ -115,8 +115,8 @@ allShortcuts = [
   opera, firefox, chrome,
   -- manuals
   ghcExt,
-  -- standards
-  rfc ]
+  -- standards and databases
+  rfc, cve ]
 
 -- | <https://facebook.com Facebook>
 --
@@ -548,8 +548,7 @@ ghcExt _ e = case lookup e ghcExtsList of
 -- “#2026”.
 rfc :: Shortcut
 rfc _ x = do
-  let n = T.dropWhile (not . isAlphaNum) $
-            if T.toLower (T.take 3 x) == "rfc" then T.drop 3 x else x
+  let n = T.dropWhile (not . isAlphaNum) (tryStripPrefixCI "rfc" x)
   unless (T.all isDigit n) $
     warn "non-digits in RFC number"
   when (T.null n) $
@@ -558,6 +557,30 @@ rfc _ x = do
   when (T.null n') $
     warn "RFC number can't be 0"
   return ("https://tools.ietf.org/html/rfc" <> n')
+
+-- | <http://cve.mitre.org CVEs> (Common Vulnerabilities and Exposures)
+--
+-- Link example:
+-- @[CVE-2014-10001](\@cve)@ →
+-- <http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2014-10001>
+--
+-- Precise format of recognised text: optional “cve” (case-insensitive), then
+-- arbitrary amount of spaces and punctuation (or nothing), then the year,
+-- ‘-’, and a number. Examples: “CVE-2014-10001”, “cve 2014-10001”,
+-- “2014-10001”.
+cve :: Shortcut
+cve _ x = do
+  let n = T.dropWhile (not . isAlphaNum) (tryStripPrefixCI "cve" x)
+  unless (T.length n >= 9) $
+    warn "CVE-ID is too short"
+  let isValid = and [
+        T.length n >= 9,
+        T.all isDigit (T.take 4 n),
+        T.index n 4 == '-',
+        T.all isDigit (T.drop 5 n) ]
+  unless isValid $
+    warn "CVE-ID doesn't follow the <year>-<digits> format"
+  return ("http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-" <> n)
 
 -- | <https://wikipedia.org/ Wikipedia>
 --

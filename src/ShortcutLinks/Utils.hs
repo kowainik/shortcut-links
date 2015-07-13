@@ -9,6 +9,7 @@ module ShortcutLinks.Utils
 (
   replaceSpaces,
   titleFirst,
+  tryStripPrefixCI,
 )
 where
 
@@ -38,3 +39,19 @@ titleFirst :: Text -> Text
 titleFirst s = case T.uncons s of
   Nothing        -> ""
   Just (c, rest) -> toUpper c `T.cons` rest
+
+-- | Strip given prefix from a string, or do nothing if the string doesn't
+-- have given prefix.
+--
+-- This function is case-insensitive.
+--
+-- >>> tryStripPrefixCI "FOO" "FooBAR"
+-- "BAR"
+--
+-- >>> tryStripPrefixCI "foo" "quux"
+-- "quux"
+tryStripPrefixCI :: Text -> Text -> Text
+tryStripPrefixCI pref str =
+  let pref' = T.toCaseFold pref
+      (str_pref, rest) = T.splitAt (T.length pref') str
+  in  if T.toCaseFold str_pref == pref' then rest else str
