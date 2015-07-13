@@ -521,8 +521,9 @@ ghcExt _ e = case lookup e ghcExtsList of
 -- <https://tools.ietf.org/html/rfc2026 RFC 2026>
 --
 -- Precise format of recognised text: optional “rfc” (case-insensitive), then
--- arbitrary amount of spaces and punctuation, then the number. Examples:
--- “RFC 2026”, “RFC-2026”, “rfc2026”, “rfc #2026”, “2026”, “#2026”.
+-- arbitrary amount of spaces and punctuation (or nothing), then the
+-- number. Examples: “RFC 2026”, “RFC-2026”, “rfc2026”, “rfc #2026”, “2026”,
+-- “#2026”.
 rfc :: Shortcut
 rfc _ x = do
   let n = T.dropWhile (not . isAlphaNum) $
