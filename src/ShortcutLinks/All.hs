@@ -41,7 +41,7 @@ module ShortcutLinks.All
 
   -- * Addons
   -- ** Text editors
-  marmalade, melpa, elpa, packagecontrol, atom, jedit,
+  marmalade, melpa, elpa, packagecontrol, atom, jedit, vim,
   -- ** Browsers
   opera, firefox, chrome,
 
@@ -110,7 +110,7 @@ allShortcuts = [
   -- OS – Linux
   debian, aur, mint, fedora, gentoo, opensuse, mageia,
   -- text editors
-  marmalade, melpa, elpa, packagecontrol, atom, jedit,
+  marmalade, melpa, elpa, packagecontrol, atom, jedit, vim,
   -- browsers
   opera, firefox, chrome,
   -- manuals
@@ -501,6 +501,14 @@ atom _ q = return $ "https://atom.io/packages/" <> q
 -- <http://plugins.jedit.org/plugins/?MarkdownPlugin MarkdownPlugin>
 jedit :: Shortcut
 jedit _ q = return $ "http://plugins.jedit.org/plugins/?" <> q
+
+-- | __Vim__ – <http://www.vim.org/scripts/ scripts>
+--
+-- Link example (ID):
+-- @[haskell.vim](\@vim:2062)@ →
+-- <http://www.vim.org/scripts/script.php?script_id=2062 haskell.vim>
+vim :: Shortcut
+vim _ q = return $ "http://www.vim.org/scripts/script.php?script_id=" <> q
 
 -- | __Opera__ – <https://addons.opera.com extensions>
 --
