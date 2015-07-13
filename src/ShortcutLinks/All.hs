@@ -1,10 +1,12 @@
 {-# LANGUAGE
-OverloadedStrings
+OverloadedStrings,
+DeriveFunctor
   #-}
 
 
 module ShortcutLinks.All
 (
+  Result,
   Shortcut,
   allShortcuts,
 
@@ -65,7 +67,27 @@ import Data.Char
 import ShortcutLinks.Utils
 
 
-type Shortcut = Maybe Text -> Text -> Either String Text
+data Result a = Failure String | Warning [String] a | Success a
+  deriving (Show, Functor)
+
+instance Applicative Result where
+  pure = return
+  (<*>) = ap
+
+instance Monad Result where
+  fail = Failure
+  return = Success
+  Failure x    >>= _ = Failure x
+  Warning wa a >>= f = case f a of
+    Success    b -> Warning wa b
+    Warning wb b -> Warning (wa ++ wb) b
+    Failure x    -> Failure x
+  Success    a >>= f = f a
+
+warn :: String -> Result ()
+warn s = Warning [s] ()
+
+type Shortcut = Maybe Text -> Text -> Result Text
 
 -- | A list of all functions included in this module.
 allShortcuts :: [Shortcut]
@@ -102,7 +124,7 @@ allShortcuts = [
 -- @[green](\@fb)@ →
 -- <https://facebook.com/green>
 facebook :: Shortcut
-facebook _ q = Right $ "https://facebook.com/" <> q
+facebook _ q = return $ "https://facebook.com/" <> q
 
 -- | <https://vk.com Vkontakte> (Вконтакте)
 --
@@ -115,7 +137,7 @@ facebook _ q = Right $ "https://facebook.com/" <> q
 -- @[1337](\@vk)@ →
 -- <https://vk.com/id1337>
 vk :: Shortcut
-vk _ q = Right $ "https://vk.com/" <> q'
+vk _ q = return $ "https://vk.com/" <> q'
   where q' = if not (T.null q) && isDigit (T.head q) then "id" <> q else q
 
 -- | <https://plus.google.com Google+>
@@ -141,11 +163,11 @@ vk _ q = Right $ "https://vk.com/" <> q'
 -- <https://plus.google.com/explore/Australia #Australia>
 googleplus :: Shortcut
 googleplus _ q
-  | T.null q        = Right url
-  | T.head q == '#' = Right $ url <> "explore/" <> T.tail q
-  | T.head q == '+' = Right $ url <> q
-  | T.all isDigit q = Right $ url <> q
-  | otherwise       = Right $ url <> "+" <> T.concat (T.words q)
+  | T.null q        = return $ url
+  | T.head q == '#' = return $ url <> "explore/" <> T.tail q
+  | T.head q == '+' = return $ url <> q
+  | T.all isDigit q = return $ url <> q
+  | otherwise       = return $ url <> "+" <> T.concat (T.words q)
   where url = "https://plus.google.com/"
 
 -- | <https://twitter.com Twitter>
@@ -163,10 +185,10 @@ googleplus _ q
 -- <https://twitter.com/hashtag/haskell #haskell>
 twitter :: Shortcut
 twitter _ q
-  | T.null q        = Right url
-  | T.head q == '#' = Right $ url <> "hashtag/" <> T.tail q
-  | T.head q == '@' = Right $ url <> T.tail q
-  | otherwise       = Right $ url <> q
+  | T.null q        = return $ url
+  | T.head q == '#' = return $ url <> "hashtag/" <> T.tail q
+  | T.head q == '@' = return $ url <> T.tail q
+  | otherwise       = return $ url <> q
   where url = "https://twitter.com/"
 
 -- | <https://juick.com Juick>
@@ -184,10 +206,10 @@ twitter _ q
 -- <https://juick.com/tag/Haskell *Haskell>
 juick :: Shortcut
 juick _ q
-  | T.null q        = Right url
-  | T.head q == '*' = Right $ url <> "tag/" <> T.tail q
-  | T.head q == '@' = Right $ url <> T.tail q
-  | otherwise       = Right $ url <> q
+  | T.null q        = return $ url
+  | T.head q == '*' = return $ url <> "tag/" <> T.tail q
+  | T.head q == '@' = return $ url <> T.tail q
+  | otherwise       = return $ url <> q
   where url = "https://juick.com/"
 
 -- | <https://google.com Google>
@@ -196,7 +218,7 @@ juick _ q
 -- @[random query](\@google)@ →
 -- <https://www.google.com/search?nfpr=1&q=random+query random query>
 google :: Shortcut
-google _ q = Right $
+google _ q = return $
   "https://google.com/search?nfpr=1&q=" <> replaceSpaces '+' q
 
 -- | <https://duckduckgo.com Duckduckgo>
@@ -205,7 +227,7 @@ google _ q = Right $
 -- @[random query](\@ddg)@ →
 -- <https://duckduckgo.com/?q=random+query random query>
 duckduckgo :: Shortcut
-duckduckgo _ q = Right $ "https://duckduckgo.com/?q=" <> replaceSpaces '+' q
+duckduckgo _ q = return $ "https://duckduckgo.com/?q=" <> replaceSpaces '+' q
 
 -- | <http://yandex.ru Yandex> (Russian search engine)
 --
@@ -213,7 +235,7 @@ duckduckgo _ q = Right $ "https://duckduckgo.com/?q=" <> replaceSpaces '+' q
 -- @[random query](\@yandex)@ →
 -- <http://yandex.ru/search/?noreask=1&text=random+query random query>
 yandex :: Shortcut
-yandex _ q = Right $
+yandex _ q = return $
   "http://yandex.ru/search/?noreask=1&text=" <> replaceSpaces '+' q
 
 -- | <http://baidu.com Baidu> (Chinese search engine)
@@ -222,7 +244,7 @@ yandex _ q = Right $
 -- @[random query](\@baidu)@ →
 -- <http://baidu.com/s?nojc=1&wd=random+query random query>
 baidu :: Shortcut
-baidu _ q = Right $ "http://baidu.com/s?nojc=1&wd=" <> replaceSpaces '+' q
+baidu _ q = return $ "http://baidu.com/s?nojc=1&wd=" <> replaceSpaces '+' q
 
 -- | __Node.js__ – <https://npmjs.com NPM>
 --
@@ -230,7 +252,7 @@ baidu _ q = Right $ "http://baidu.com/s?nojc=1&wd=" <> replaceSpaces '+' q
 -- @[markdown](\@npm)@ →
 -- <https://www.npmjs.com/package/markdown markdown>
 npm :: Shortcut
-npm _ q = Right $ "https://npmjs.com/package/" <> q
+npm _ q = return $ "https://npmjs.com/package/" <> q
 
 -- | __Javascript__ – <http://jamjs.org/packages/#/ Jam>
 --
@@ -238,7 +260,7 @@ npm _ q = Right $ "https://npmjs.com/package/" <> q
 -- @[pagedown](\@jam)@ →
 -- <http://jamjs.org/packages/#/details/pagedown pagedown>
 jam :: Shortcut
-jam _ q = Right $ "http://jamjs.org/packages/#/details/" <> q
+jam _ q = return $ "http://jamjs.org/packages/#/details/" <> q
 
 -- | __Ruby__ – <https://rubygems.org RubyGems.org>
 --
@@ -246,7 +268,7 @@ jam _ q = Right $ "http://jamjs.org/packages/#/details/" <> q
 -- @[github-markdown](\@gem)@ →
 -- <https://rubygems.org/gems/github-markdown github-markdown>
 rubygems :: Shortcut
-rubygems _ q = Right $ "https://rubygems.org/gems/" <> q
+rubygems _ q = return $ "https://rubygems.org/gems/" <> q
 
 -- | __Python__ – <https://pypi.python.org/pypi PyPI>
 --
@@ -254,7 +276,7 @@ rubygems _ q = Right $ "https://rubygems.org/gems/" <> q
 -- @[Markdown](\@pypi)@ →
 -- <https://pypi.python.org/pypi/Markdown Markdown>
 pypi :: Shortcut
-pypi _ q = Right $ "https://pypi.python.org/pypi/" <> q
+pypi _ q = return $ "https://pypi.python.org/pypi/" <> q
 
 -- | __Perl__ – <https://metacpan.org MetaCPAN> (by module)
 --
@@ -262,7 +284,7 @@ pypi _ q = Right $ "https://pypi.python.org/pypi/" <> q
 -- @[Text::Markdown](\@cpan)@ →
 -- <https://metacpan.org/pod/Text::Markdown Text::Markdown>
 metacpanPod :: Shortcut
-metacpanPod _ q = Right $ "https://metacpan.org/pod/" <> q
+metacpanPod _ q = return $ "https://metacpan.org/pod/" <> q
 
 -- | __Perl__ – <https://metacpan.org MetaCPAN> (by release)
 --
@@ -270,7 +292,7 @@ metacpanPod _ q = Right $ "https://metacpan.org/pod/" <> q
 -- @[Text-Markdown](\@cpan-r)@ →
 -- <https://metacpan.org/release/Text-Markdown Text-Markdown>
 metacpanRelease :: Shortcut
-metacpanRelease _ q = Right $ "https://metacpan.org/release/" <> q
+metacpanRelease _ q = return $ "https://metacpan.org/release/" <> q
 
 -- | __Haskell__ – <https://hackage.haskell.org Hackage>
 --
@@ -278,7 +300,7 @@ metacpanRelease _ q = Right $ "https://metacpan.org/release/" <> q
 -- @[cmark](\@hackage)@ →
 -- <https://hackage.haskell.org/package/cmark cmark>
 hackage :: Shortcut
-hackage _ q = Right $ "https://hackage.haskell.org/package/" <> q
+hackage _ q = return $ "https://hackage.haskell.org/package/" <> q
 
 -- | __Rust__ – <https://crates.io Cargo>
 --
@@ -286,7 +308,7 @@ hackage _ q = Right $ "https://hackage.haskell.org/package/" <> q
 -- @[hoedown](\@cargo)@ →
 -- <https://crates.io/crates/hoedown hoedown>
 cargo :: Shortcut
-cargo _ q = Right $ "https://crates.io/crates/" <> q
+cargo _ q = return $ "https://crates.io/crates/" <> q
 
 -- | __PHP__ – <http://pear.php.net PEAR>
 --
@@ -294,7 +316,7 @@ cargo _ q = Right $ "https://crates.io/crates/" <> q
 -- @[Text_Wiki_Doku](\@pear)@ →
 -- <http://pear.php.net/package/Text_Wiki_Doku Text_Wiki_Doku>
 pear :: Shortcut
-pear _ q = Right $ "http://pear.php.net/package/" <> q
+pear _ q = return $ "http://pear.php.net/package/" <> q
 
 -- | __Dart__ – <https://pub.dartlang.org pub>
 --
@@ -302,7 +324,7 @@ pear _ q = Right $ "http://pear.php.net/package/" <> q
 -- @[md_proc](\@pub)@ →
 -- <https://pub.dartlang.org/packages/md_proc md_proc>
 pub :: Shortcut
-pub _ q = Right $ "https://pub.dartlang.org/packages/" <> q
+pub _ q = return $ "https://pub.dartlang.org/packages/" <> q
 
 -- | __R__ – <http://cran.r-project.org/web/packages/ CRAN>
 --
@@ -310,7 +332,7 @@ pub _ q = Right $ "https://pub.dartlang.org/packages/" <> q
 -- @[markdown](\@cran)@ →
 -- <http://cran.r-project.org/web/packages/markdown markdown>
 cran :: Shortcut
-cran _ q = Right $ "http://cran.r-project.org/web/packages/" <> q
+cran _ q = return $ "http://cran.r-project.org/web/packages/" <> q
 
 -- | __Erlang__ – <https://hex.pm Hex>
 --
@@ -318,7 +340,7 @@ cran _ q = Right $ "http://cran.r-project.org/web/packages/" <> q
 -- @[earmark](\@hex)@ →
 -- <https://hex.pm/packages/earmark earmark>
 hex :: Shortcut
-hex _ q = Right $ "https://hex.pm/packages/" <> q
+hex _ q = return $ "https://hex.pm/packages/" <> q
 
 -- | __SWI-Prolog__ – <http://www.swi-prolog.org/pack/list packages>
 --
@@ -326,7 +348,7 @@ hex _ q = Right $ "https://hex.pm/packages/" <> q
 -- @[markdown](\@swi)@ →
 -- <http://www.swi-prolog.org/pack/list?p=markdown markdown>
 swiprolog :: Shortcut
-swiprolog _ q = Right $ "http://www.swi-prolog.org/pack/list?p=" <> q
+swiprolog _ q = return $ "http://www.swi-prolog.org/pack/list?p=" <> q
 
 -- | __D__ – <http://code.dlang.org DUB>
 --
@@ -334,7 +356,7 @@ swiprolog _ q = Right $ "http://www.swi-prolog.org/pack/list?p=" <> q
 -- @[dmarkdown](\@dub)@ →
 -- <http://code.dlang.org/packages/dmarkdown dmarkdown>
 dub :: Shortcut
-dub _ q = Right $ "http://code.dlang.org/packages/" <> q
+dub _ q = return $ "http://code.dlang.org/packages/" <> q
 
 -- | __Bash__ – <http://bpkg.io bpkg>
 --
@@ -342,7 +364,7 @@ dub _ q = Right $ "http://code.dlang.org/packages/" <> q
 -- @[markdown](\@bpkg)@ →
 -- <http://www.bpkg.io/pkg/markdown markdown>
 bpkg :: Shortcut
-bpkg _ q = Right $ "http://bpkg.io/pkg/" <> q
+bpkg _ q = return $ "http://bpkg.io/pkg/" <> q
 
 -- | <https://github.com Github>
 --
@@ -356,8 +378,8 @@ bpkg _ q = Right $ "http://bpkg.io/pkg/" <> q
 -- <https://github.com/aelve/shortcut-links shortcut-links>
 github :: Shortcut
 github mbOwner q = case mbOwner of
-  Nothing    -> Right $ "https://github.com/" <> q
-  Just owner -> Right $ "https://github.com/" <> owner <> "/" <> q
+  Nothing    -> return $ "https://github.com/" <> q
+  Just owner -> return $ "https://github.com/" <> owner <> "/" <> q
 
 -- | <https://bitbucket.org Bitbucket>
 --
@@ -371,8 +393,8 @@ github mbOwner q = case mbOwner of
 -- <https://bitbucket.org/bos/text text>
 bitbucket :: Shortcut
 bitbucket mbOwner q = case mbOwner of
-  Nothing    -> Right $ "https://bitbucket.org/" <> q
-  Just owner -> Right $ "https://bitbucket.org/" <> owner <> "/" <> q
+  Nothing    -> return $ "https://bitbucket.org/" <> q
+  Just owner -> return $ "https://bitbucket.org/" <> owner <> "/" <> q
 
 -- | <https://gitlab.com Gitlab>
 --
@@ -393,8 +415,8 @@ bitbucket mbOwner q = case mbOwner of
 -- anyway).
 gitlab :: Shortcut
 gitlab mbOwner q = case mbOwner of
-  Nothing    -> Right $ "https://gitlab.com/" <> q
-  Just owner -> Right $ "https://gitlab.com/" <> owner <> "/" <> q
+  Nothing    -> return $ "https://gitlab.com/" <> q
+  Just owner -> return $ "https://gitlab.com/" <> owner <> "/" <> q
 
 -- | __Android__ – <https://play.google.com Google Play> (formerly Play Market)
 --
@@ -402,7 +424,7 @@ gitlab mbOwner q = case mbOwner of
 -- @[com.opera.mini.native](\@gplay)@ →
 -- <https://play.google.com/store/apps/details?id=com.opera.mini.native Opera Mini>
 googleplay :: Shortcut
-googleplay _ q = Right $ "https://play.google.com/store/apps/details?id=" <> q
+googleplay _ q = return $ "https://play.google.com/store/apps/details?id=" <> q
 
 -- | <http://braumeister.org Braumeister> (Homebrew formulas)
 --
@@ -410,7 +432,7 @@ googleplay _ q = Right $ "https://play.google.com/store/apps/details?id=" <> q
 -- @[multimarkdown](\@brew)@ →
 -- <http://braumeister.org/formula/multimarkdown multimarkdown>
 braumeister :: Shortcut
-braumeister _ q = Right $ "http://braumeister.org/formula/" <> q
+braumeister _ q = return $ "http://braumeister.org/formula/" <> q
 
 -- | <https://chocolatey.org Chocolatey>
 --
@@ -418,51 +440,51 @@ braumeister _ q = Right $ "http://braumeister.org/formula/" <> q
 -- @[Opera](\@chocolatey\)@ →
 -- <https://chocolatey.org/packages/Opera Opera>
 chocolatey :: Shortcut
-chocolatey _ q = Right $ "https://chocolatey.org/packages/" <> q
+chocolatey _ q = return $ "https://chocolatey.org/packages/" <> q
 
 -- | __Debian__ – <https://debian.org/distrib/packages packages (stable)>
 debian :: Shortcut
-debian _ q = Right $ "https://packages.debian.org/stable/" <> q
+debian _ q = return $ "https://packages.debian.org/stable/" <> q
 
 -- | __Arch Linux__ – <https://aur.archlinux.org AUR> (“user repository”)
 aur :: Shortcut
-aur _ q = Right $ "https://aur.archlinux.org/packages/" <> q
+aur _ q = return $ "https://aur.archlinux.org/packages/" <> q
 
 -- | __Gentoo__ – <https://packages.gentoo.org packages>
 gentoo :: Shortcut
-gentoo _ q = Right $ "https://packages.gentoo.org/package/" <> q
+gentoo _ q = return $ "https://packages.gentoo.org/package/" <> q
 
 -- | __openSUSE__ – <http://software.opensuse.org packages>
 opensuse :: Shortcut
-opensuse _ q = Right $ "http://software.opensuse.org/package/" <> q
+opensuse _ q = return $ "http://software.opensuse.org/package/" <> q
 
 -- | __Linux Mint__ – <http://community.linuxmint.com/software/browse packages>
 mint :: Shortcut
-mint _ q = Right $ "http://community.linuxmint.com/software/view/" <> q
+mint _ q = return $ "http://community.linuxmint.com/software/view/" <> q
 
 -- | __Mageia__ – <http://mageia.madb.org packages>
 mageia :: Shortcut
-mageia _ q = Right $ "http://mageia.madb.org/package/show/name/" <> q
+mageia _ q = return $ "http://mageia.madb.org/package/show/name/" <> q
 
 -- | __Fedora__ – <https://admin.fedoraproject.org/pkgdb packages>
 fedora :: Shortcut
-fedora _ q = Right $ "https://admin.fedoraproject.org/pkgdb/package/" <> q
+fedora _ q = return $ "https://admin.fedoraproject.org/pkgdb/package/" <> q
 
 -- | __Emacs__ – <https://marmalade-repo.org Marmalade>
 marmalade :: Shortcut
-marmalade _ q = Right $ "https://marmalade-repo.org/packages/" <> q
+marmalade _ q = return $ "https://marmalade-repo.org/packages/" <> q
 
 -- | __Emacs__ – <http://melpa.org MELPA>
 melpa :: Shortcut
-melpa _ q = Right $ "http://melpa.org/#/" <> q
+melpa _ q = return $ "http://melpa.org/#/" <> q
 
 -- | __Emacs__ – <https://elpa.gnu.org ELPA>
 elpa :: Shortcut
-elpa _ q = Right $ "https://elpa.gnu.org/packages/" <> q
+elpa _ q = return $ "https://elpa.gnu.org/packages/" <> q
 
 -- | __Sublime Text__ – <https://packagecontrol.io Package Control>
 packagecontrol :: Shortcut
-packagecontrol _ q = Right $ "https://packagecontrol.io/packages/" <> q
+packagecontrol _ q = return $ "https://packagecontrol.io/packages/" <> q
 
 -- | __Atom__ – <https://atom.io/packages packages>
 --
@@ -470,7 +492,7 @@ packagecontrol _ q = Right $ "https://packagecontrol.io/packages/" <> q
 -- @[tidy-markdown](\@atom)@ →
 -- <https://atom.io/packages/tidy-markdown tidy-markdown>
 atom :: Shortcut
-atom _ q = Right $ "https://atom.io/packages/" <> q
+atom _ q = return $ "https://atom.io/packages/" <> q
 
 -- | __jEdit__ – <http://plugins.jedit.org packages>
 --
@@ -478,7 +500,7 @@ atom _ q = Right $ "https://atom.io/packages/" <> q
 -- @[MarkdownPlugin](\@jedit)@ →
 -- <http://plugins.jedit.org/plugins/?MarkdownPlugin MarkdownPlugin>
 jedit :: Shortcut
-jedit _ q = Right $ "http://plugins.jedit.org/plugins/?" <> q
+jedit _ q = return $ "http://plugins.jedit.org/plugins/?" <> q
 
 -- | __Opera__ – <https://addons.opera.com extensions>
 --
@@ -486,7 +508,7 @@ jedit _ q = Right $ "http://plugins.jedit.org/plugins/?" <> q
 -- @[amazon-for-opera]@ →
 -- <https://addons.opera.com/extensions/details/amazon-for-opera Amazon for Opera>
 opera :: Shortcut
-opera _ q = Right $ "https://addons.opera.com/extensions/details/" <> q
+opera _ q = return $ "https://addons.opera.com/extensions/details/" <> q
 
 -- | __Firefox__ – <https://addons.mozilla.org/firefox Add-ons> (extensions, themes)
 --
@@ -494,7 +516,7 @@ opera _ q = Right $ "https://addons.opera.com/extensions/details/" <> q
 -- @[tree-style-tab]@ →
 -- <https://addons.mozilla.org/firefox/addon/tree-style-tab Tree Style Tab>
 firefox :: Shortcut
-firefox _ q = Right $ "https://addons.mozilla.org/firefox/addon/" <> q
+firefox _ q = return $ "https://addons.mozilla.org/firefox/addon/" <> q
 
 -- | __Chrome__ – <https://chrome.google.com/webstore Chrome Web Store> (extensions, apps, themes)
 --
@@ -502,7 +524,7 @@ firefox _ q = Right $ "https://addons.mozilla.org/firefox/addon/" <> q
 -- @[hdokiejnpimakedhajhdlcegeplioahd]@ →
 -- <https://chrome.google.com/webstore/detail/hdokiejnpimakedhajhdlcegeplioahd LastPass>
 chrome :: Shortcut
-chrome _ q = Right $ "https://chrome.google.com/webstore/detail/" <> q
+chrome _ q = return $ "https://chrome.google.com/webstore/detail/" <> q
 
 -- | <https://www.haskell.org/ghc/ GHC> (Glasgow Haskell Compiler) extensions
 --
@@ -511,8 +533,8 @@ chrome _ q = Right $ "https://chrome.google.com/webstore/detail/" <> q
 -- <https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/syntax-extns.html#view-patterns ViewPatterns>
 ghcExt :: Shortcut
 ghcExt _ e = case lookup e ghcExtsList of
-  Nothing -> Left (T.unpack ("unknown GHC extension '" <> e <> "'"))
-  Just l  -> Right l
+  Nothing -> fail ("unknown GHC extension '" ++ T.unpack e ++ "'")
+  Just l  -> return l
 
 -- | <https://www.ietf.org/rfc.html RFCs>
 --
@@ -529,12 +551,12 @@ rfc _ x = do
   let n = T.dropWhile (not . isAlphaNum) $
             if T.toLower (T.take 3 x) == "rfc" then T.drop 3 x else x
   unless (T.all isDigit n) $
-    Left "non-digits in RFC number"
+    warn "non-digits in RFC number"
   when (T.null n) $
-    Left "no RFC number"
+    warn "no RFC number"
   let n' = T.dropWhile (== '0') n
   when (T.null n') $
-    Left "RFC number can't be 0"
+    warn "RFC number can't be 0"
   return ("https://tools.ietf.org/html/rfc" <> n')
 
 -- | <https://wikipedia.org/ Wikipedia>
@@ -547,7 +569,7 @@ rfc _ x = do
 -- @[Haskell](\@w(ru))@ →
 -- <https://ru.wikipedia.org/wiki/Haskell>
 wikipedia :: Shortcut
-wikipedia mbLang q = Right $
+wikipedia mbLang q = return $
   mconcat ["https://", lang, ".wikipedia.org/wiki/", q']
   where
     lang = fromMaybe "en" mbLang
@@ -566,7 +588,7 @@ wikipedia mbLang q = Right $
 -- You can give anything as a category instead of “series”, it'll be
 -- capitalised but nothing else.
 tvtropes :: Shortcut
-tvtropes mbCategory q = Right $
+tvtropes mbCategory q = return $
   mconcat ["http://tvtropes.org/pmwiki/pmwiki.php/", category, "/", q']
   where
     category = maybe "Main" titleFirst mbCategory
