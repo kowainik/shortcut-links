@@ -49,7 +49,7 @@ module ShortcutLinks.All
   ghcExt,
 
   -- * Standards and databases
-  rfc, cve,
+  rfc, ecma, cve,
 )
 where
 
@@ -159,6 +159,7 @@ allShortcuts =
   "ghc-ext"                 .= ghcExt,
   -- standards and databases
   "rfc"                     .= rfc,
+  "ecma"                    .= ecma,
   "cve"                     .= cve ]
 
 -- | <https://facebook.com Facebook>
@@ -680,6 +681,30 @@ rfc _ x = do
   when (T.null n') $
     warn "RFC number can't be 0"
   return ("https://tools.ietf.org/html/rfc" <> n')
+
+-- | <http://ecma-international.org/publications/index.html ECMA standards>
+--
+-- Link example:
+-- @[ECMA-262](\@ecma)@ →
+-- <http://www.ecma-international.org/publications/standards/Ecma-262.htm ECMA-262>
+--
+-- Precise format of recognised text: optional “ECMA” (case-insensitive),
+-- then arbitrary amount of spaces and punctuation (or nothing), then the
+-- number. Examples: “ECMA-262”, “ECMA 262”, “ecma262”, “ECMA #262”, “262”,
+-- “#262”.
+ecma :: Shortcut
+ecma _ x = do
+  let n = T.dropWhile (not . isAlphaNum) (tryStripPrefixCI "ecma" x)
+  unless (T.all isDigit n) $
+    warn "non-digits in ECMA standard number"
+  when (T.null n) $
+    warn "no ECMA standard number"
+  let n' = T.dropWhile (== '0') n
+  when (T.null n') $
+    warn "ECMA standard number can't be 0"
+  return $ mconcat [
+    "http://www.ecma-international.org/publications/standards/Ecma-",
+    n', ".htm" ]
 
 -- | <http://cve.mitre.org CVEs> (Common Vulnerabilities and Exposures)
 --
