@@ -98,7 +98,8 @@ instance (FormatArg a, FormatType r) => FormatType (a -> r) where
   format' str params = \a -> format' str (formatArg a : params)
 
 -- | A 'printf'-like function which fully supports 'Text' as an input and
--- output format and which uses @{}@ instead of @%@ to indicate placeholders.
+-- output format and which uses @{}@ instead of @%@ to indicate
+-- placeholders. If you use it, don't forget to enable @OverloadedStrings@.
 --
 -- This is a lightweight alternative to something like the text-format
 -- package, and it's closer to 'printf' and simpler to use.

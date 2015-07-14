@@ -1,3 +1,7 @@
+{-# LANGUAGE
+OverloadedStrings
+  #-}
+
 module ShortcutLinks
 (
   Result(..),
