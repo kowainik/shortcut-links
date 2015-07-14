@@ -37,7 +37,7 @@ module ShortcutLinks.All
   -- ** OS X
   braumeister,
   -- ** Linux
-  debian, aur, mint, fedora, gentoo, opensuse, mageia,
+  debian, aur, mint, fedora, gentoo, opensuse,
 
   -- * Addons
   -- ** Text editors
@@ -141,7 +141,6 @@ allShortcuts =
   "fedora"                  .= fedora,
   "gentoo"                  .= gentoo,
   "opensuse"                .= opensuse,
-  "mageia"                  .= mageia,
   -- text editors
   "marmalade"               .= marmalade,
   "melpa"                   .= melpa,
@@ -530,10 +529,6 @@ opensuse _ q = return $ "http://software.opensuse.org/package/" <> q
 -- <http://community.linuxmint.com/software/view/ghc ghc>
 mint :: Shortcut
 mint _ q = return $ "http://community.linuxmint.com/software/view/" <> q
-
--- | __Mageia__ – <http://mageia.madb.org packages>
-mageia :: Shortcut
-mageia _ q = return $ "http://mageia.madb.org/package/show/name/" <> q
 
 -- | __Fedora__ – <https://admin.fedoraproject.org/pkgdb packages>
 --
