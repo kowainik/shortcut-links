@@ -11,6 +11,7 @@ module ShortcutLinks.Utils
   replaceSpaces,
   titleFirst,
   tryStripPrefixCI,
+  stripPrefixCI,
   orElse,
   format,
 )
@@ -60,6 +61,21 @@ tryStripPrefixCI pref str =
   let pref' = T.toCaseFold pref
       (str_pref, rest) = T.splitAt (T.length pref') str
   in  if T.toCaseFold str_pref == pref' then rest else str
+
+-- | Strip given prefix from a string.
+--
+-- This function is case-insensitive.
+--
+-- >>> stripPrefixCI "FOO" "FooBAR"
+-- Just "BAR"
+--
+-- >>> stripPrefixCI "foo" "quux"
+-- Nothing
+stripPrefixCI :: Text -> Text -> Maybe Text
+stripPrefixCI pref str =
+  let pref' = T.toCaseFold pref
+      (str_pref, rest) = T.splitAt (T.length pref') str
+  in  if T.toCaseFold str_pref == pref' then Just rest else Nothing
 
 -- | Choose the 2nd value if the 1st is empty (equal to 'mempty').
 orElse :: (Eq a, Monoid a) => a -> a -> a

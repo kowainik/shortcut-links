@@ -1,6 +1,7 @@
 {-# LANGUAGE
 OverloadedStrings,
-DeriveFunctor
+DeriveFunctor,
+ViewPatterns
   #-}
 
 
@@ -672,6 +673,8 @@ ghcExt _ ext = case lookup ext ghcExtsList of
 rfc :: Shortcut
 rfc _ x = do
   let n = T.dropWhile (not . isAlphaNum) (tryStripPrefixCI "rfc" x)
+  -- We don't use 'readMaybe' here because 'readMaybe' isn't available in GHC
+  -- 7.4, which Pandoc has to be compatible with.
   unless (T.all isDigit n) $
     warn "non-digits in RFC number"
   when (T.null n) $
@@ -679,26 +682,43 @@ rfc _ x = do
   let n' = T.dropWhile (== '0') n `orElse` "0"
   return ("https://tools.ietf.org/html/rfc" <> n')
 
--- | <http://ecma-international.org/publications/index.html ECMA standards>
+-- | <http://ecma-international.org/publications/index.html Ecma standards and technical reports>
 --
--- Link example:
+-- Link example (standard):
 -- @[ECMA-262](\@ecma)@ →
 -- <http://www.ecma-international.org/publications/standards/Ecma-262.htm ECMA-262>
 --
--- Precise format of recognised text: optional “ECMA” (case-insensitive),
--- then arbitrary amount of spaces and punctuation (or nothing), then the
--- number. Examples: “ECMA-262”, “ECMA 262”, “ecma262”, “ECMA #262”, “262”,
--- “#262”.
+-- Link example (technical report):
+-- @[TR/71](\@ecma)@ →
+-- <http://ecma-international.org/publications/techreports/E-TR-071.htm TR/71>
+--
+-- Precise format of recognised text for standards: optional “ECMA”
+-- (case-insensitive), then arbitrary amount of spaces and punctuation (or
+-- nothing), then the number. Examples: “ECMA-262”, “ECMA 262”, “ecma262”,
+-- “ECMA #262”, “262”, “#262”.
+--
+-- Format for technical reports is the same, except that “TR” (instead of
+-- “ECMA”) is not optional (so, if there's only a number given, it's
+-- considered a standard and not a technical report).
 ecma :: Shortcut
-ecma _ x = do
-  let n = T.dropWhile (not . isAlphaNum) (tryStripPrefixCI "ecma" x)
-  unless (T.all isDigit n) $
+ecma _ q = do
+  -- TODO: move dropSeparators to Utils and use it in 'rfc' and 'cve'
+  let dropSeparators = T.dropWhile (not . isAlphaNum)
+  let (dropSeparators -> mbNum, isTR) = case stripPrefixCI "tr" q of
+        Nothing -> (tryStripPrefixCI "ecma" q, False)
+        Just q' -> (q', True)
+  -- We don't use 'readMaybe' here because 'readMaybe' isn't available in GHC
+  -- 7.4, which Pandoc has to be compatible with.
+  unless (T.all isDigit mbNum) $
     warn "non-digits in ECMA standard number"
-  when (T.null n) $
+  when (T.null mbNum) $
     warn "no ECMA standard number"
-  let n' = T.dropWhile (== '0') n `orElse` "0"
-  return $ format
-    "http://www.ecma-international.org/publications/standards/Ecma-{}.htm" n'
+  -- The number has to have at least 3 digits.
+  let num = T.justifyRight 3 '0' mbNum
+      url = "http://ecma-international.org/publications" :: Text
+  return $ if isTR
+    then format "{}/techreports/E-TR-{}.htm" url num
+    else format "{}/standards/Ecma-{}.htm" url num
 
 -- | <http://cve.mitre.org CVEs> (Common Vulnerabilities and Exposures)
 --
