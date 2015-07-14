@@ -1,5 +1,6 @@
 {-# LANGUAGE
-OverloadedStrings
+OverloadedStrings,
+FlexibleInstances
   #-}
 
 {- |
@@ -11,10 +12,13 @@ module ShortcutLinks.Utils
   titleFirst,
   tryStripPrefixCI,
   orElse,
+  format,
 )
 where
 
 
+-- General
+import Data.Monoid
 -- Text
 import Data.Char
 import qualified Data.Text as T
@@ -60,3 +64,43 @@ tryStripPrefixCI pref str =
 -- | Choose the 2nd value if the 1st is empty (equal to 'mempty').
 orElse :: (Eq a, Monoid a) => a -> a -> a
 orElse a b = if a == mempty then b else a
+
+------------------------------------------------------------------------------
+-- A micro formatting library which supports Text better than printf.
+------------------------------------------------------------------------------
+
+class FormatArg a where
+  formatArg :: a -> Text
+
+instance FormatArg Text    where formatArg = id
+instance FormatArg String  where formatArg = T.pack
+instance FormatArg Int     where formatArg = T.pack . show
+instance FormatArg Integer where formatArg = T.pack . show
+
+class FormatType r where
+  format' :: Text -> [Text] -> r
+
+instance FormatType String where
+  format' str params = T.unpack $ format' str params
+
+instance FormatType Text where
+  format' str params = go fragments (reverse params)
+    where
+      fragments = T.splitOn "{}" str
+      go (f:fs) (y:ys) = f <> y <> go fs ys
+      go [f] []        = f
+      go _ _ = error $ format
+        "ShortcutLinks.Utils.format: {} placeholders, but {} parameters"
+        (length fragments - 1)
+        (length params)
+
+instance (FormatArg a, FormatType r) => FormatType (a -> r) where
+  format' str params = \a -> format' str (formatArg a : params)
+
+-- | A 'printf'-like function which fully supports 'Text' as an input and
+-- output format and which uses @{}@ instead of @%@ to indicate placeholders.
+--
+-- This is a lightweight alternative to something like the text-format
+-- package, and it's closer to 'printf' and simpler to use.
+format :: FormatType r => Text -> r
+format str = format' str []

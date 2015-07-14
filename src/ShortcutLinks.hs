@@ -11,6 +11,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 -- shortcut-links
 import ShortcutLinks.All (allShortcuts, Result(..))
+import ShortcutLinks.Utils (format)
 
 
 -- | Use a shortcut from 'allShortcuts'.
@@ -23,8 +24,7 @@ useShortcut
   -> Result Text   -- ^ Resulting URL
 useShortcut name option link =
   let givenShortcut (names,_) = name `elem` names
-      quotedName = "'" ++ T.unpack name ++ "'"
   in  case filter givenShortcut allShortcuts of
-        []   -> fail ("there's no shortcut named " ++ quotedName)
+        []   -> fail (format "there's no shortcut named '{}'" name)
         [sh] -> (snd sh) option link
-        _    -> fail ("there's more than one shortcut named " ++ quotedName)
+        _    -> fail (format "there's more than one shortcut named '{}'" name)

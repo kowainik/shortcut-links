@@ -208,11 +208,11 @@ vk _ q = return $ "https://vk.com/" <> q'
 googleplus :: Shortcut
 googleplus _ q
   | T.null q        = return $ url
-  | T.head q == '#' = return $ url <> "explore/" <> T.tail q
-  | T.head q == '+' = return $ url <> q
-  | T.all isDigit q = return $ url <> q
-  | otherwise       = return $ url <> "+" <> T.concat (T.words q)
-  where url = "https://plus.google.com/"
+  | T.head q == '#' = return $ format "{}/explore/{}" url (T.tail q)
+  | T.head q == '+' = return $ format "{}/{}" url q
+  | T.all isDigit q = return $ format "{}/{}" url q
+  | otherwise       = return $ format "{}/+{}" url (T.concat (T.words q))
+  where url = "https://plus.google.com"
 
 -- | <https://twitter.com Twitter>
 --
@@ -230,10 +230,10 @@ googleplus _ q
 twitter :: Shortcut
 twitter _ q
   | T.null q        = return $ url
-  | T.head q == '#' = return $ url <> "hashtag/" <> T.tail q
-  | T.head q == '@' = return $ url <> T.tail q
-  | otherwise       = return $ url <> q
-  where url = "https://twitter.com/"
+  | T.head q == '#' = return $ format "{}/hashtag/{}" url (T.tail q)
+  | T.head q == '@' = return $ format "{}/{}" url (T.tail q)
+  | otherwise       = return $ format "{}/{}" url q
+  where url = "https://twitter.com"
 
 -- | <https://juick.com Juick>
 --
@@ -251,10 +251,10 @@ twitter _ q
 juick :: Shortcut
 juick _ q
   | T.null q        = return $ url
-  | T.head q == '*' = return $ url <> "tag/" <> T.tail q
-  | T.head q == '@' = return $ url <> T.tail q
-  | otherwise       = return $ url <> q
-  where url = "https://juick.com/"
+  | T.head q == '*' = return $ format "{}/tag/{}" url (T.tail q)
+  | T.head q == '@' = return $ format "{}/{}" url (T.tail q)
+  | otherwise       = return $ format "{}/{}" url q
+  where url = "https://juick.com"
 
 -- | <https://google.com Google>
 --
@@ -422,8 +422,8 @@ bpkg _ q = return $ "http://bpkg.io/pkg/" <> q
 -- <https://github.com/aelve/shortcut-links shortcut-links>
 github :: Shortcut
 github mbOwner q = case mbOwner of
-  Nothing    -> return $ "https://github.com/" <> q
-  Just owner -> return $ "https://github.com/" <> owner <> "/" <> q
+  Nothing    -> return $ format "https://github.com/{}" q
+  Just owner -> return $ format "https://github.com/{}/{}" owner q
 
 -- | <https://bitbucket.org Bitbucket>
 --
@@ -437,8 +437,8 @@ github mbOwner q = case mbOwner of
 -- <https://bitbucket.org/bos/text text>
 bitbucket :: Shortcut
 bitbucket mbOwner q = case mbOwner of
-  Nothing    -> return $ "https://bitbucket.org/" <> q
-  Just owner -> return $ "https://bitbucket.org/" <> owner <> "/" <> q
+  Nothing    -> return $ format "https://bitbucket.org/{}" q
+  Just owner -> return $ format "https://bitbucket.org/{}/{}" owner q
 
 -- | <https://gitlab.com Gitlab>
 --
@@ -459,8 +459,8 @@ bitbucket mbOwner q = case mbOwner of
 -- anyway).
 gitlab :: Shortcut
 gitlab mbOwner q = case mbOwner of
-  Nothing    -> return $ "https://gitlab.com/" <> q
-  Just owner -> return $ "https://gitlab.com/" <> owner <> "/" <> q
+  Nothing    -> return $ format "https://gitlab.com/{}" q
+  Just owner -> return $ format "https://gitlab.com/{}/{}" owner q
 
 -- | __Android__ – <https://play.google.com Google Play> (formerly Play Market)
 --
@@ -496,8 +496,7 @@ chocolatey _ q = return $ "https://chocolatey.org/packages/" <> q
 -- @[ghc](\@debian(experimental))@ →
 -- <https://packages.debian.org/experimental/ghc ghc>
 debian :: Shortcut
-debian mbDist q = return $
-  mconcat ["https://packages.debian.org/", dist, "/", q]
+debian mbDist q = return $ format "https://packages.debian.org/{}/{}" dist q
   where
     dist = fromMaybe "stable" mbDist
 
@@ -576,7 +575,7 @@ melpa _ q = return $ "http://melpa.org/#/" <> q
 -- @[undo-tree](\@elpa)@ →
 -- <https://elpa.gnu.org/packages/undo-tree.html undo-tree>
 elpa :: Shortcut
-elpa _ q = return $ "https://elpa.gnu.org/packages/" <> q <> ".html"
+elpa _ q = return $ format "https://elpa.gnu.org/packages/{}.html" q
 
 -- | __Sublime Text__ – <https://packagecontrol.io Package Control>
 --
@@ -656,9 +655,9 @@ chrome _ q = return $ "https://chrome.google.com/webstore/detail/" <> q
 -- @[ViewPatterns](\@ghc-ext)@ →
 -- <https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/syntax-extns.html#view-patterns ViewPatterns>
 ghcExt :: Shortcut
-ghcExt _ e = case lookup e ghcExtsList of
-  Nothing -> fail ("unknown GHC extension '" ++ T.unpack e ++ "'")
-  Just l  -> return l
+ghcExt _ ext = case lookup ext ghcExtsList of
+  Nothing   -> fail (format "unknown GHC extension '{}'" ext)
+  Just link -> return link
 
 -- | <https://www.ietf.org/rfc.html RFCs>
 --
@@ -698,9 +697,8 @@ ecma _ x = do
   when (T.null n) $
     warn "no ECMA standard number"
   let n' = T.dropWhile (== '0') n `orElse` "0"
-  return $ mconcat [
-    "http://www.ecma-international.org/publications/standards/Ecma-",
-    n', ".htm" ]
+  return $ format
+    "http://www.ecma-international.org/publications/standards/Ecma-{}.htm" n'
 
 -- | <http://cve.mitre.org CVEs> (Common Vulnerabilities and Exposures)
 --
@@ -737,7 +735,7 @@ cve _ x = do
 -- <https://ru.wikipedia.org/wiki/Haskell>
 wikipedia :: Shortcut
 wikipedia mbLang q = return $
-  mconcat ["https://", lang, ".wikipedia.org/wiki/", q']
+  format "https://{}.wikipedia.org/wiki/{}" lang q'
   where
     lang = fromMaybe "en" mbLang
     q'   = titleFirst (replaceSpaces '_' q)
@@ -755,10 +753,10 @@ wikipedia mbLang q = return $
 -- You can give anything as a category instead of “series”, it'll be
 -- capitalised but nothing else.
 tvtropes :: Shortcut
-tvtropes mbCategory q = return $
-  mconcat ["http://tvtropes.org/pmwiki/pmwiki.php/", category, "/", q']
+tvtropes mbCat q = return $
+  format "http://tvtropes.org/pmwiki/pmwiki.php/{}/{}" cat q'
   where
-    category = maybe "Main" titleFirst mbCategory
+    cat = maybe "Main" titleFirst mbCat
     isSep c = (isSpace c || isPunctuation c) && c /= '\''
     -- Break into words, transform each word like “it's” → “Its”, and concat.
     -- Note that e.g. “man-made” is considered 2 separate words.
