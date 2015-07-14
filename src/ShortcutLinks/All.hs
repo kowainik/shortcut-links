@@ -485,13 +485,20 @@ braumeister _ q = return $ "http://braumeister.org/formula/" <> q
 chocolatey :: Shortcut
 chocolatey _ q = return $ "https://chocolatey.org/packages/" <> q
 
--- | __Debian__ – <https://debian.org/distrib/packages packages (stable)>
+-- | __Debian__ – <https://debian.org/distrib/packages packages>
 --
--- Link example:
+-- Link example (stable distribution):
 -- @[ghc](\@debian)@ →
 -- <https://packages.debian.org/stable/ghc ghc>
+-- 
+-- Link example (experimental distribution, but could be any other):
+-- @[ghc](\@debian(experimental))@ →
+-- <https://packages.debian.org/experimental/ghc ghc>
 debian :: Shortcut
-debian _ q = return $ "https://packages.debian.org/stable/" <> q
+debian mbDist q = return $
+  mconcat ["https://packages.debian.org/", dist, "/", q]
+  where
+    dist = fromMaybe "stable" mbDist
 
 -- | __Arch Linux__ – <https://aur.archlinux.org AUR> (“user repository”)
 --
