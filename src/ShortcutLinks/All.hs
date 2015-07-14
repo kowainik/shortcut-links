@@ -6,7 +6,7 @@ DeriveFunctor
 
 module ShortcutLinks.All
 (
-  Result,
+  Result(..),
   Shortcut,
   allShortcuts,
 
