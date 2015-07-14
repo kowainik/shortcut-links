@@ -506,13 +506,21 @@ aur _ q = return $ "https://aur.archlinux.org/packages/" <> q
 -- Link example:
 -- @[dev-lang/ghc](\@gentoo)@ →
 -- <https://packages.gentoo.org/package/dev-lang/ghc dev-lang/ghc>
+-- 
+-- Link example (category as an option):
+-- @[ghc](\@gentoo(dev-lang))@ →
+-- <https://packages.gentoo.org/package/dev-lang/ghc ghc>
 --
 -- Note that if you don't specify any category, the link would still work –
 -- but there are a lot of packages with overlapping names (like “ace”, “csv”,
 -- “http”), and such links would lead to search pages listing several
 -- packages. So, it's better to include categories.
 gentoo :: Shortcut
-gentoo _ q = return $ "https://packages.gentoo.org/package/" <> q
+gentoo mbCat q = return $ "https://packages.gentoo.org/package/" <> pkg
+  where
+    pkg = case mbCat of
+      Nothing  -> q
+      Just cat -> cat <> "/" <> q
 
 -- | __openSUSE__ – <http://software.opensuse.org packages>
 --
