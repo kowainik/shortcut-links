@@ -677,9 +677,7 @@ rfc _ x = do
     warn "non-digits in RFC number"
   when (T.null n) $
     warn "no RFC number"
-  let n' = T.dropWhile (== '0') n
-  when (T.null n') $
-    warn "RFC number can't be 0"
+  let n' = T.dropWhile (== '0') n `orElse` "0"
   return ("https://tools.ietf.org/html/rfc" <> n')
 
 -- | <http://ecma-international.org/publications/index.html ECMA standards>
@@ -699,9 +697,7 @@ ecma _ x = do
     warn "non-digits in ECMA standard number"
   when (T.null n) $
     warn "no ECMA standard number"
-  let n' = T.dropWhile (== '0') n
-  when (T.null n') $
-    warn "ECMA standard number can't be 0"
+  let n' = T.dropWhile (== '0') n `orElse` "0"
   return $ mconcat [
     "http://www.ecma-international.org/publications/standards/Ecma-",
     n', ".htm" ]

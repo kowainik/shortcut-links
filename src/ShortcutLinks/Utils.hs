@@ -10,6 +10,7 @@ module ShortcutLinks.Utils
   replaceSpaces,
   titleFirst,
   tryStripPrefixCI,
+  orElse,
 )
 where
 
@@ -55,3 +56,7 @@ tryStripPrefixCI pref str =
   let pref' = T.toCaseFold pref
       (str_pref, rest) = T.splitAt (T.length pref') str
   in  if T.toCaseFold str_pref == pref' then rest else str
+
+-- | Choose the 2nd value if the 1st is empty (equal to 'mempty').
+orElse :: (Eq a, Monoid a) => a -> a -> a
+orElse a b = if a == mempty then b else a
