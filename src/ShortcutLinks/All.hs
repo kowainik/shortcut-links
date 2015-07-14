@@ -41,9 +41,9 @@ module ShortcutLinks.All
 
   -- * Addons
   -- ** Text editors
-  marmalade, melpa, elpa, packagecontrol, atom, jedit, vim,
+  marmalade, melpa, elpa, packagecontrol, atomPackage, atomTheme, jedit, vim,
   -- ** Browsers
-  opera, firefox, chrome,
+  operaExt, operaTheme, firefox, chrome,
 
   -- * Manuals
   ghcExt,
@@ -89,34 +89,78 @@ warn s = Warning [s] ()
 
 type Shortcut = Maybe Text -> Text -> Result Text
 
--- | A list of all functions included in this module.
-allShortcuts :: [Shortcut]
-allShortcuts = [
+-- | A list of all functions included in this module, together with suggested
+-- names for them.
+allShortcuts :: [([Text], Shortcut)]
+allShortcuts =
+  let (.=) names func = (T.words names, func)
+  in [
   -- encyclopedias
-  wikipedia, tvtropes,
+  "w wikipedia"             .= wikipedia,
+  "tvt tvtropes"            .= tvtropes,
   -- social networks
-  facebook, vk, googleplus,
+  "fb facebook"             .= facebook,
+  "vk vkontakte"            .= vk,
+  "gp gplus googleplus"     .= googleplus,
   -- microblogs
-  twitter, juick,
+  "t twitter"               .= twitter,
+  "juick"                   .= juick,
   -- search engines
-  google, duckduckgo, yandex, baidu,
+  "google"                  .= google,
+  "ddg duckduckgo"          .= duckduckgo,
+  "yandex"                  .= yandex,
+  "baidu"                   .= baidu,
   -- programming language libraries
-  npm, jam, rubygems, pypi, metacpanPod, metacpanRelease, hackage, cargo,
-  pub, hex, cran, swiprolog, dub, bpkg, pear,
+  "npm"                     .= npm,
+  "jam"                     .= jam,
+  "gem"                     .= rubygems,
+  "pypi"                    .= pypi,
+  "cpan"                    .= metacpanPod,
+  "cpan-r"                  .= metacpanRelease,
+  "hackage"                 .= hackage,
+  "cargo"                   .= cargo,
+  "pub"                     .= pub,
+  "hex"                     .= hex,
+  "cran"                    .= cran,
+  "swiprolog"               .= swiprolog,
+  "dub"                     .= dub,
+  "bpkg"                    .= bpkg,
+  "pear"                    .= pear,
   -- code hosting
-  github, gitlab, bitbucket,
+  "gh github"               .= github,
+  "gitlab"                  .= gitlab,
+  "bitbucket"               .= bitbucket,
   -- OS
-  googleplay, chocolatey, braumeister,
+  "gplay googleplay"        .= googleplay,
+  "chocolatey"              .= chocolatey,
+  "brew"                    .= braumeister,
   -- OS – Linux
-  debian, aur, mint, fedora, gentoo, opensuse, mageia,
+  "debian"                  .= debian,
+  "aur"                     .= aur,
+  "mint"                    .= mint,
+  "fedora"                  .= fedora,
+  "gentoo"                  .= gentoo,
+  "opensuse"                .= opensuse,
+  "mageia"                  .= mageia,
   -- text editors
-  marmalade, melpa, elpa, packagecontrol, atom, jedit, vim,
+  "marmalade"               .= marmalade,
+  "melpa"                   .= melpa,
+  "elpa"                    .= elpa,
+  "sublime"                 .= packagecontrol,
+  "atom"                    .= atomPackage,
+  "atom-theme"              .= atomTheme,
+  "jedit"                   .= jedit,
+  "vim"                     .= vim,
   -- browsers
-  opera, firefox, chrome,
+  "opera"                   .= operaExt,
+  "opera-theme"             .= operaTheme,
+  "firefox"                 .= firefox,
+  "chrome"                  .= chrome,
   -- manuals
-  ghcExt,
+  "ghc-ext"                 .= ghcExt,
   -- standards and databases
-  rfc, cve ]
+  "rfc"                     .= rfc,
+  "cve"                     .= cve ]
 
 -- | <https://facebook.com Facebook>
 --
@@ -345,7 +389,7 @@ hex _ q = return $ "https://hex.pm/packages/" <> q
 -- | __SWI-Prolog__ – <http://www.swi-prolog.org/pack/list packages>
 --
 -- Link example:
--- @[markdown](\@swi)@ →
+-- @[markdown](\@swiprolog)@ →
 -- <http://www.swi-prolog.org/pack/list?p=markdown markdown>
 swiprolog :: Shortcut
 swiprolog _ q = return $ "http://www.swi-prolog.org/pack/list?p=" <> q
@@ -421,7 +465,7 @@ gitlab mbOwner q = case mbOwner of
 -- | __Android__ – <https://play.google.com Google Play> (formerly Play Market)
 --
 -- Link example:
--- @[com.opera.mini.native](\@gplay)@ →
+-- @[Opera Mini](\@gplay:com.opera.mini.native)@ →
 -- <https://play.google.com/store/apps/details?id=com.opera.mini.native Opera Mini>
 googleplay :: Shortcut
 googleplay _ q = return $ "https://play.google.com/store/apps/details?id=" <> q
@@ -437,28 +481,53 @@ braumeister _ q = return $ "http://braumeister.org/formula/" <> q
 -- | <https://chocolatey.org Chocolatey>
 --
 -- Link example:
--- @[Opera](\@chocolatey\)@ →
+-- @[Opera](\@chocolatey)@ →
 -- <https://chocolatey.org/packages/Opera Opera>
 chocolatey :: Shortcut
 chocolatey _ q = return $ "https://chocolatey.org/packages/" <> q
 
 -- | __Debian__ – <https://debian.org/distrib/packages packages (stable)>
+--
+-- Link example:
+-- @[ghc](\@debian)@ →
+-- <https://packages.debian.org/stable/ghc ghc>
 debian :: Shortcut
 debian _ q = return $ "https://packages.debian.org/stable/" <> q
 
 -- | __Arch Linux__ – <https://aur.archlinux.org AUR> (“user repository”)
+--
+-- Link example:
+-- @[ghc-git](\@aur)@ →
+-- <https://aur.archlinux.org/packages/ghc-git ghc-git>
 aur :: Shortcut
 aur _ q = return $ "https://aur.archlinux.org/packages/" <> q
 
 -- | __Gentoo__ – <https://packages.gentoo.org packages>
+--
+-- Link example:
+-- @[dev-lang/ghc](\@gentoo)@ →
+-- <https://packages.gentoo.org/package/dev-lang/ghc dev-lang/ghc>
+--
+-- Note that if you don't specify any category, the link would still work –
+-- but there are a lot of packages with overlapping names (like “ace”, “csv”,
+-- “http”), and such links would lead to search pages listing several
+-- packages. So, it's better to include categories.
 gentoo :: Shortcut
 gentoo _ q = return $ "https://packages.gentoo.org/package/" <> q
 
 -- | __openSUSE__ – <http://software.opensuse.org packages>
+--
+-- Link example:
+-- @[ghc](\@opensuse)@ →
+-- <http://software.opensuse.org/package/ghc ghc>
 opensuse :: Shortcut
 opensuse _ q = return $ "http://software.opensuse.org/package/" <> q
 
 -- | __Linux Mint__ – <http://community.linuxmint.com/software/browse packages>
+--
+-- Link example:
+-- @[ghc](\@mint)@ →
+-- <http://community.linuxmint.com/software/view/ghc ghc>
 mint :: Shortcut
 mint _ q = return $ "http://community.linuxmint.com/software/view/" <> q
 
@@ -467,22 +536,42 @@ mageia :: Shortcut
 mageia _ q = return $ "http://mageia.madb.org/package/show/name/" <> q
 
 -- | __Fedora__ – <https://admin.fedoraproject.org/pkgdb packages>
+--
+-- Link example:
+-- @[ghc](\@fedora)@ →
+-- <https://admin.fedoraproject.org/pkgdb/package/ghc ghc>
 fedora :: Shortcut
 fedora _ q = return $ "https://admin.fedoraproject.org/pkgdb/package/" <> q
 
 -- | __Emacs__ – <https://marmalade-repo.org Marmalade>
+--
+-- Link example:
+-- @[markdown-mode](\@marmalade)@ →
+-- <https://marmalade-repo.org/packages/markdown-mode markdown-mode>
 marmalade :: Shortcut
 marmalade _ q = return $ "https://marmalade-repo.org/packages/" <> q
 
 -- | __Emacs__ – <http://melpa.org MELPA>
+--
+-- Link example:
+-- @[markdown-mode](\@melpa)@ →
+-- <http://melpa.org/#/markdown-mode markdown-mode>
 melpa :: Shortcut
 melpa _ q = return $ "http://melpa.org/#/" <> q
 
 -- | __Emacs__ – <https://elpa.gnu.org ELPA>
+--
+-- Link example:
+-- @[undo-tree](\@elpa)@ →
+-- <https://elpa.gnu.org/packages/undo-tree undo-tree>
 elpa :: Shortcut
 elpa _ q = return $ "https://elpa.gnu.org/packages/" <> q
 
 -- | __Sublime Text__ – <https://packagecontrol.io Package Control>
+--
+-- Link example:
+-- @[MarkdownEditing](\@sublime)@ →
+-- <https://packagecontrol.io/packages/MarkdownEditing MarkdownEditing>
 packagecontrol :: Shortcut
 packagecontrol _ q = return $ "https://packagecontrol.io/packages/" <> q
 
@@ -491,8 +580,16 @@ packagecontrol _ q = return $ "https://packagecontrol.io/packages/" <> q
 -- Link example:
 -- @[tidy-markdown](\@atom)@ →
 -- <https://atom.io/packages/tidy-markdown tidy-markdown>
-atom :: Shortcut
-atom _ q = return $ "https://atom.io/packages/" <> q
+atomPackage :: Shortcut
+atomPackage _ q = return $ "https://atom.io/packages/" <> q
+
+-- | __Atom__ – <https://atom.io/themes themes>
+--
+-- Link example:
+-- @[atom-material-ui](\@atom-theme)@ →
+-- <https://atom.io/themes/atom-material-ui atom-material-ui>
+atomTheme :: Shortcut
+atomTheme _ q = return $ "https://atom.io/themes/" <> q
 
 -- | __jEdit__ – <http://plugins.jedit.org packages>
 --
@@ -510,13 +607,21 @@ jedit _ q = return $ "http://plugins.jedit.org/plugins/?" <> q
 vim :: Shortcut
 vim _ q = return $ "http://www.vim.org/scripts/script.php?script_id=" <> q
 
--- | __Opera__ – <https://addons.opera.com extensions>
+-- | __Opera__ – <https://addons.opera.com/extensions/ extensions>
 --
 -- Link example:
--- @[amazon-for-opera]@ →
--- <https://addons.opera.com/extensions/details/amazon-for-opera Amazon for Opera>
-opera :: Shortcut
-opera _ q = return $ "https://addons.opera.com/extensions/details/" <> q
+-- @[Amazon](\@opera:amazon-for-opera)@ →
+-- <https://addons.opera.com/extensions/details/amazon-for-opera Amazon>
+operaExt :: Shortcut
+operaExt _ q = return $ "https://addons.opera.com/extensions/details/" <> q
+
+-- | __Opera__ – <https://addons.opera.com/themes/ themes>
+--
+-- Link example:
+-- @[Space theme](\@opera-theme:space-15)@ →
+-- <https://addons.opera.com/en/themes/details/space-15 Space theme>
+operaTheme :: Shortcut
+operaTheme _ q = return $ "https://addons.opera.com/themes/details/" <> q
 
 -- | __Firefox__ – <https://addons.mozilla.org/firefox Add-ons> (extensions, themes)
 --
@@ -537,7 +642,7 @@ chrome _ q = return $ "https://chrome.google.com/webstore/detail/" <> q
 -- | <https://www.haskell.org/ghc/ GHC> (Glasgow Haskell Compiler) extensions
 --
 -- Link example:
--- @[ViewPatterns](\@ghcext)@ →
+-- @[ViewPatterns](\@ghc-ext)@ →
 -- <https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/syntax-extns.html#view-patterns ViewPatterns>
 ghcExt :: Shortcut
 ghcExt _ e = case lookup e ghcExtsList of
