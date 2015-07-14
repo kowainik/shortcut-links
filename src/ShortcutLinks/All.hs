@@ -573,9 +573,9 @@ melpa _ q = return $ "http://melpa.org/#/" <> q
 --
 -- Link example:
 -- @[undo-tree](\@elpa)@ →
--- <https://elpa.gnu.org/packages/undo-tree undo-tree>
+-- <https://elpa.gnu.org/packages/undo-tree.html undo-tree>
 elpa :: Shortcut
-elpa _ q = return $ "https://elpa.gnu.org/packages/" <> q
+elpa _ q = return $ "https://elpa.gnu.org/packages/" <> q <> ".html"
 
 -- | __Sublime Text__ – <https://packagecontrol.io Package Control>
 --
