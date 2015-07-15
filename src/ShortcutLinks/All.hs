@@ -177,11 +177,13 @@ Or by profile ID (are there still people without usernames, actually?):
 
 @
 \[someone something\](\@fb:164680686880529)
-<https://www.facebook.com/profile.php?id=164680686880529>
+<https://facebook.com/profile.php?id=164680686880529>
 @
 -}
 facebook :: Shortcut
-facebook _ q = return $ "https://facebook.com/" <> q
+facebook _ q
+  | T.all isDigit q = return $ "https://facebook.com/profile.php?id=" <> q
+  | otherwise       = return $ "https://facebook.com/" <> q
 
 {- | <https://vk.com Vkontakte> (Вконтакте)
 
@@ -200,8 +202,9 @@ Or by ID:
 @
 -}
 vk :: Shortcut
-vk _ q = return $ "https://vk.com/" <> q'
-  where q' = if not (T.null q) && isDigit (T.head q) then "id" <> q else q
+vk _ q
+  | T.all isDigit q = return $ "https://vk.com/id" <> q
+  | otherwise       = return $ "https://vk.com/" <> q
 
 {- | <https://plus.google.com Google+>
 
