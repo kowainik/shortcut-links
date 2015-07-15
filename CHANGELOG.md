@@ -1,3 +1,7 @@
+# 0.3.0.0
+
+* Added shortcut names to their descriptions.
+
 # 0.2.0.0
 
 * Descriptions of shortcuts look much better now.
