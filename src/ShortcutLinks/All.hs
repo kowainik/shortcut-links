@@ -95,6 +95,8 @@ A list of all functions included in this module, together with suggested names f
 -}
 allShortcuts :: [([Text], Shortcut)]
 allShortcuts =
+  -- When changing something here, don't forget to update the description for
+  -- the corresponding shortcut.
   let (.=) names func = (T.words names, func)
   in [
   -- encyclopedias
@@ -164,7 +166,7 @@ allShortcuts =
   "ecma"                    .= ecma,
   "cve"                     .= cve ]
 
-{- | <https://facebook.com Facebook>
+{- | <https://facebook.com Facebook> (shortcut: “fb” or “facebook”)
 
 Link by username:
 
@@ -185,7 +187,7 @@ facebook _ q
   | T.all isDigit q = return $ "https://facebook.com/profile.php?id=" <> q
   | otherwise       = return $ "https://facebook.com/" <> q
 
-{- | <https://vk.com Vkontakte> (Вконтакте)
+{- | <https://vk.com Vkontakte> (Вконтакте) (shortcut: “vk” or “vkontakte”)
 
 Link by username:
 
@@ -206,7 +208,7 @@ vk _ q
   | T.all isDigit q = return $ "https://vk.com/id" <> q
   | otherwise       = return $ "https://vk.com/" <> q
 
-{- | <https://plus.google.com Google+>
+{- | <https://plus.google.com Google+> (shortcut: “gp”, “gplus”, or “googleplus”)
 
 Link by username:
 
@@ -252,7 +254,7 @@ googleplus _ q
   | otherwise       = return $ format "{}/+{}" url (T.concat (T.words q))
   where url = "https://plus.google.com"
 
-{- | <https://twitter.com Twitter>
+{- | <https://twitter.com Twitter> (shortcut: “t” or “twitter”)
 
 Link by username:
 
@@ -283,7 +285,7 @@ twitter _ q
   | otherwise       = return $ format "{}/{}" url q
   where url = "https://twitter.com"
 
-{- | <https://juick.com Juick>
+{- | <https://juick.com Juick> (shortcut: “juick”)
 
 Link by username:
 
@@ -314,7 +316,7 @@ juick _ q
   | otherwise       = return $ format "{}/{}" url q
   where url = "https://juick.com"
 
-{- | <https://google.com Google>
+{- | <https://google.com Google> (shortcut: “google”)
 
 Search results:
 
@@ -327,7 +329,7 @@ google :: Shortcut
 google _ q = return $
   "https://google.com/search?nfpr=1&q=" <> replaceSpaces '+' q
 
-{- | <https://duckduckgo.com Duckduckgo>
+{- | <https://duckduckgo.com Duckduckgo> (shortcut: “ddg” or “duckduckgo”)
 
 Search results:
 
@@ -339,7 +341,7 @@ Search results:
 duckduckgo :: Shortcut
 duckduckgo _ q = return $ "https://duckduckgo.com/?q=" <> replaceSpaces '+' q
 
-{- | <http://yandex.ru Yandex> (Russian search engine)
+{- | <http://yandex.ru Yandex> (Russian search engine) (shortcut: “yandex”)
 
 Search results:
 
@@ -352,7 +354,7 @@ yandex :: Shortcut
 yandex _ q = return $
   "http://yandex.ru/search/?noreask=1&text=" <> replaceSpaces '+' q
 
-{- | <http://baidu.com Baidu> (Chinese search engine)
+{- | <http://baidu.com Baidu> (Chinese search engine) (shortcut: “baidu”)
 
 Search results:
 
@@ -364,7 +366,7 @@ Search results:
 baidu :: Shortcut
 baidu _ q = return $ "http://baidu.com/s?nojc=1&wd=" <> replaceSpaces '+' q
 
-{- | __Node.js__ – <https://npmjs.com NPM>
+{- | __Node.js__ – <https://npmjs.com NPM> (shortcut: “npm”)
 
 Link to a package:
 
@@ -376,7 +378,7 @@ Link to a package:
 npm :: Shortcut
 npm _ q = return $ "https://npmjs.com/package/" <> q
 
-{- | __Javascript__ – <http://jamjs.org/packages/#/ Jam>
+{- | __Javascript__ – <http://jamjs.org/packages/#/ Jam> (shortcut: “jam”)
 
 Link to a package:
 
@@ -388,7 +390,7 @@ Link to a package:
 jam :: Shortcut
 jam _ q = return $ "http://jamjs.org/packages/#/details/" <> q
 
-{- | __Ruby__ – <https://rubygems.org RubyGems.org>
+{- | __Ruby__ – <https://rubygems.org RubyGems.org> (shortcut: “gem”)
 
 Link to a package:
 
@@ -400,7 +402,7 @@ Link to a package:
 rubygems :: Shortcut
 rubygems _ q = return $ "https://rubygems.org/gems/" <> q
 
-{- | __Python__ – <https://pypi.python.org/pypi PyPI>
+{- | __Python__ – <https://pypi.python.org/pypi PyPI> (shortcut: “pypi”)
 
 Link to a package:
 
@@ -412,7 +414,7 @@ Link to a package:
 pypi :: Shortcut
 pypi _ q = return $ "https://pypi.python.org/pypi/" <> q
 
-{- | __Perl__ – <https://metacpan.org MetaCPAN> (by module)
+{- | __Perl__ – <https://metacpan.org MetaCPAN> (modules) (shortcut: “cpan”)
 
 Link to a module:
 
@@ -426,7 +428,7 @@ To link to a release, look at 'metacpanRelease'.
 metacpanPod :: Shortcut
 metacpanPod _ q = return $ "https://metacpan.org/pod/" <> q
 
-{- | __Perl__ – <https://metacpan.org MetaCPAN> (by release)
+{- | __Perl__ – <https://metacpan.org MetaCPAN> (releases) (shortcut: “cpan-r”)
 
 Link to a release:
 
@@ -438,7 +440,7 @@ Link to a release:
 metacpanRelease :: Shortcut
 metacpanRelease _ q = return $ "https://metacpan.org/release/" <> q
 
-{- | __Haskell__ – <https://hackage.haskell.org Hackage>
+{- | __Haskell__ – <https://hackage.haskell.org Hackage> (shortcut: “hackage”)
 
 Link to a package:
 
@@ -450,7 +452,7 @@ Link to a package:
 hackage :: Shortcut
 hackage _ q = return $ "https://hackage.haskell.org/package/" <> q
 
-{- | __Rust__ – <https://crates.io Cargo>
+{- | __Rust__ – <https://crates.io Cargo> (shortcut: “cargo”)
 
 Link to a package:
 
@@ -462,7 +464,7 @@ Link to a package:
 cargo :: Shortcut
 cargo _ q = return $ "https://crates.io/crates/" <> q
 
-{- | __PHP__ – <http://pear.php.net PEAR>
+{- | __PHP__ – <http://pear.php.net PEAR> (shortcut: “pear”)
 
 Link to a package:
 
@@ -474,7 +476,7 @@ Link to a package:
 pear :: Shortcut
 pear _ q = return $ "http://pear.php.net/package/" <> q
 
-{- | __Dart__ – <https://pub.dartlang.org pub>
+{- | __Dart__ – <https://pub.dartlang.org pub> (shortcut: “pub”)
 
 Link to a package:
 
@@ -486,7 +488,7 @@ Link to a package:
 pub :: Shortcut
 pub _ q = return $ "https://pub.dartlang.org/packages/" <> q
 
-{- | __R__ – <http://cran.r-project.org/web/packages/ CRAN>
+{- | __R__ – <http://cran.r-project.org/web/packages/ CRAN> (shortcut: “cran”)
 
 Link to a package:
 
@@ -498,7 +500,7 @@ Link to a package:
 cran :: Shortcut
 cran _ q = return $ "http://cran.r-project.org/web/packages/" <> q
 
-{- | __Erlang__ – <https://hex.pm Hex>
+{- | __Erlang__ – <https://hex.pm Hex> (shortcut: “hex”)
 
 Link to a package:
 
@@ -510,7 +512,7 @@ Link to a package:
 hex :: Shortcut
 hex _ q = return $ "https://hex.pm/packages/" <> q
 
-{- | __SWI-Prolog__ – <http://www.swi-prolog.org/pack/list packages>
+{- | __SWI-Prolog__ – <http://www.swi-prolog.org/pack/list packages> (shortcut: “swiprolog”)
 
 Link to a package:
 
@@ -522,7 +524,7 @@ Link to a package:
 swiprolog :: Shortcut
 swiprolog _ q = return $ "http://www.swi-prolog.org/pack/list?p=" <> q
 
-{- | __D__ – <http://code.dlang.org DUB>
+{- | __D__ – <http://code.dlang.org DUB> (shortcut: “dub”)
 
 Link to a package:
 
@@ -534,7 +536,7 @@ Link to a package:
 dub :: Shortcut
 dub _ q = return $ "http://code.dlang.org/packages/" <> q
 
-{- | __Bash__ – <http://bpkg.io bpkg>
+{- | __Bash__ – <http://bpkg.io bpkg> (shortcut: “bpkg”)
 
 Link to a package:
 
@@ -546,7 +548,7 @@ Link to a package:
 bpkg :: Shortcut
 bpkg _ q = return $ "http://bpkg.io/pkg/" <> q
 
-{- | <https://github.com Github>
+{- | <https://github.com Github> (shortcut: “gh” or “github”)
 
 Link to a user:
 
@@ -574,7 +576,7 @@ github mbOwner q = case mbOwner of
   Nothing    -> return $ format "https://github.com/{}" q
   Just owner -> return $ format "https://github.com/{}/{}" owner q
 
-{- | <https://bitbucket.org Bitbucket>
+{- | <https://bitbucket.org Bitbucket> (shortcut: “bitbucket”)
 
 Link to a user:
 
@@ -602,7 +604,7 @@ bitbucket mbOwner q = case mbOwner of
   Nothing    -> return $ format "https://bitbucket.org/{}" q
   Just owner -> return $ format "https://bitbucket.org/{}/{}" owner q
 
-{- | <https://gitlab.com Gitlab>
+{- | <https://gitlab.com Gitlab> (shortcut: “gitlab”)
 
 Link to a user or a team (note that links like <https://gitlab.com/owner> work but are going to be automatically redirected to either <https://gitlab.com/u/owner> or <https://gitlab.com/groups/owner>, depending on whether it's a user or a team – so, it's a case when the “links have to look as authentic as possible” principle is violated, but nothing can be done with that):
 
@@ -630,7 +632,7 @@ gitlab mbOwner q = case mbOwner of
   Nothing    -> return $ format "https://gitlab.com/{}" q
   Just owner -> return $ format "https://gitlab.com/{}/{}" owner q
 
-{- | __Android__ – <https://play.google.com Google Play> (formerly Play Market)
+{- | __Android__ – <https://play.google.com Google Play> (formerly Play Market) (shortcut: “gplay” or “googleplay”)
 
 Link to an app:
 
@@ -642,7 +644,7 @@ Link to an app:
 googleplay :: Shortcut
 googleplay _ q = return $ "https://play.google.com/store/apps/details?id=" <> q
 
-{- | <http://braumeister.org Braumeister> (Homebrew formulas)
+{- | <http://braumeister.org Braumeister> (Homebrew formulas) (shortcut: “brew”)
 
 Link to a formula:
 
@@ -650,11 +652,13 @@ Link to a formula:
 \[multimarkdown\](\@brew)
 <http://braumeister.org/formula/multimarkdown>
 @
+
+Since all Homebrew formulas are stored in a Github repo anyway, and various sites are merely convenient ways to browse that repo, the “brew” shortcut can point to some other site in the future. Don't use it if you need /specifically/ Braumeister.
 -}
 braumeister :: Shortcut
 braumeister _ q = return $ "http://braumeister.org/formula/" <> q
 
-{- | <https://chocolatey.org Chocolatey>
+{- | <https://chocolatey.org Chocolatey> (shortcut: “chocolatey”)
 
 Link to a package:
 
@@ -666,7 +670,7 @@ Link to a package:
 chocolatey :: Shortcut
 chocolatey _ q = return $ "https://chocolatey.org/packages/" <> q
 
-{- | __Debian__ – <https://debian.org/distrib/packages packages>
+{- | __Debian__ – <https://debian.org/distrib/packages packages> (shortcut: “debian”)
 
 Link to a package in stable distribution:
 
@@ -687,7 +691,7 @@ debian mbDist q = return $ format "https://packages.debian.org/{}/{}" dist q
   where
     dist = fromMaybe "stable" mbDist
 
-{- | __Arch Linux__ – <https://aur.archlinux.org AUR> (“user repository”)
+{- | __Arch Linux__ – <https://aur.archlinux.org AUR> (“user repository”) (shortcut: “aur”)
 
 Link to a package:
 
@@ -699,7 +703,7 @@ Link to a package:
 aur :: Shortcut
 aur _ q = return $ "https://aur.archlinux.org/packages/" <> q
 
-{- | __Gentoo__ – <https://packages.gentoo.org packages>
+{- | __Gentoo__ – <https://packages.gentoo.org packages> (shortcut: “gentoo”)
 
 Link to a package:
 
@@ -724,7 +728,7 @@ gentoo mbCat q = return $ "https://packages.gentoo.org/package/" <> pkg
       Nothing  -> q
       Just cat -> cat <> "/" <> q
 
-{- | __openSUSE__ – <http://software.opensuse.org packages>
+{- | __openSUSE__ – <http://software.opensuse.org packages> (shortcut: “opensuse”)
 
 Link to a package:
 
@@ -736,7 +740,7 @@ Link to a package:
 opensuse :: Shortcut
 opensuse _ q = return $ "http://software.opensuse.org/package/" <> q
 
-{- | __Linux Mint__ – <http://community.linuxmint.com/software/browse packages>
+{- | __Linux Mint__ – <http://community.linuxmint.com/software/browse packages> (shortcut: “mint”)
 
 Link to a package:
 
@@ -748,7 +752,7 @@ Link to a package:
 mint :: Shortcut
 mint _ q = return $ "http://community.linuxmint.com/software/view/" <> q
 
-{- | __Fedora__ – <https://admin.fedoraproject.org/pkgdb packages>
+{- | __Fedora__ – <https://admin.fedoraproject.org/pkgdb packages> (shortcut: “fedora”)
 
 Link to a package:
 
@@ -760,7 +764,7 @@ Link to a package:
 fedora :: Shortcut
 fedora _ q = return $ "https://admin.fedoraproject.org/pkgdb/package/" <> q
 
-{- | __Emacs__ – <https://marmalade-repo.org Marmalade>
+{- | __Emacs__ – <https://marmalade-repo.org Marmalade> (shortcut: “marmalade”)
 
 Link to a package:
 
@@ -772,7 +776,7 @@ Link to a package:
 marmalade :: Shortcut
 marmalade _ q = return $ "https://marmalade-repo.org/packages/" <> q
 
-{- | __Emacs__ – <http://melpa.org MELPA>
+{- | __Emacs__ – <http://melpa.org MELPA> (shortcut: “melpa”)
 
 Link to a package:
 
@@ -784,7 +788,7 @@ Link to a package:
 melpa :: Shortcut
 melpa _ q = return $ "http://melpa.org/#/" <> q
 
-{- | __Emacs__ – <https://elpa.gnu.org ELPA>
+{- | __Emacs__ – <https://elpa.gnu.org ELPA> (shortcut: “elpa”)
 
 Link to a package:
 
@@ -796,7 +800,7 @@ Link to a package:
 elpa :: Shortcut
 elpa _ q = return $ format "https://elpa.gnu.org/packages/{}.html" q
 
-{- | __Sublime Text__ – <https://packagecontrol.io Package Control>
+{- | __Sublime Text__ – <https://packagecontrol.io Package Control> (shortcut: “sublimepc”)
 
 Link to a package:
 
@@ -808,7 +812,7 @@ Link to a package:
 packagecontrol :: Shortcut
 packagecontrol _ q = return $ "https://packagecontrol.io/packages/" <> q
 
-{- | __Atom__ – <https://atom.io/packages packages>
+{- | __Atom__ – <https://atom.io/packages packages> (shortcut: “atom”)
 
 Link to a package:
 
@@ -820,7 +824,7 @@ Link to a package:
 atomPackage :: Shortcut
 atomPackage _ q = return $ "https://atom.io/packages/" <> q
 
-{- | __Atom__ – <https://atom.io/themes themes>
+{- | __Atom__ – <https://atom.io/themes themes> (shortcut: “atom-theme”)
 
 Link to a theme:
 
@@ -832,7 +836,7 @@ Link to a theme:
 atomTheme :: Shortcut
 atomTheme _ q = return $ "https://atom.io/themes/" <> q
 
-{- | __jEdit__ – <http://plugins.jedit.org plugins>
+{- | __jEdit__ – <http://plugins.jedit.org plugins> (shortcut: “jedit”)
 
 Link to a plugin:
 
@@ -844,7 +848,7 @@ Link to a plugin:
 jedit :: Shortcut
 jedit _ q = return $ "http://plugins.jedit.org/plugins/?" <> q
 
-{- | __Vim__ – <http://www.vim.org/scripts/ scripts>
+{- | __Vim__ – <http://www.vim.org/scripts/ scripts> (shortcut: “vim”)
 
 Link to a script (by ID):
 
@@ -856,7 +860,7 @@ Link to a script (by ID):
 vim :: Shortcut
 vim _ q = return $ "http://www.vim.org/scripts/script.php?script_id=" <> q
 
-{- | __Opera__ – <https://addons.opera.com/extensions/ extensions>
+{- | __Opera__ – <https://addons.opera.com/extensions/ extensions> (shortcut: “opera”)
 
 Link to an extension:
 
@@ -868,7 +872,7 @@ Link to an extension:
 operaExt :: Shortcut
 operaExt _ q = return $ "https://addons.opera.com/extensions/details/" <> q
 
-{- | __Opera__ – <https://addons.opera.com/themes/ themes>
+{- | __Opera__ – <https://addons.opera.com/themes/ themes> (shortcut: “opera-theme”)
 
 Link to a theme:
 
@@ -880,7 +884,7 @@ Link to a theme:
 operaTheme :: Shortcut
 operaTheme _ q = return $ "https://addons.opera.com/themes/details/" <> q
 
-{- | __Firefox__ – <https://addons.mozilla.org/firefox add-ons>
+{- | __Firefox__ – <https://addons.mozilla.org/firefox add-ons> (shortcut: “firefox”)
 
 Link to an extension (or a theme):
 
@@ -892,7 +896,7 @@ Link to an extension (or a theme):
 firefox :: Shortcut
 firefox _ q = return $ "https://addons.mozilla.org/firefox/addon/" <> q
 
-{- | __Chrome__ – <https://chrome.google.com/webstore Chrome Web Store>
+{- | __Chrome__ – <https://chrome.google.com/webstore Chrome Web Store> (shortcut: “chrome”)
 
 Link to an extension, app, or theme (using that weird random-looking ID):
 
@@ -904,7 +908,7 @@ Link to an extension, app, or theme (using that weird random-looking ID):
 chrome :: Shortcut
 chrome _ q = return $ "https://chrome.google.com/webstore/detail/" <> q
 
-{- | <https://www.haskell.org/ghc/ GHC> (Glasgow Haskell Compiler) extensions
+{- | <https://www.haskell.org/ghc/ GHC> (Glasgow Haskell Compiler) extensions (shortcut: “ghc-ext”)
 
 Link to an extension's description in the user manual:
 
@@ -918,7 +922,7 @@ ghcExt _ ext = case lookup ext ghcExtsList of
   Nothing   -> fail (format "unknown GHC extension '{}'" ext)
   Just link -> return link
 
-{- | <https://www.ietf.org/rfc.html RFCs>
+{- | <https://www.ietf.org/rfc.html RFCs> (shortcut: “rfc”)
 
 Link to an RFC:
 
@@ -941,7 +945,7 @@ rfc _ x = do
   let n' = T.dropWhile (== '0') n `orElse` "0"
   return ("https://tools.ietf.org/html/rfc" <> n')
 
-{- | <http://ecma-international.org/publications/index.html Ecma standards and technical reports>
+{- | <http://ecma-international.org/publications/index.html Ecma standards and technical reports> (shortcut: “ecma”)
 
 Link to a standard:
 
@@ -981,7 +985,7 @@ ecma _ q = do
     then format "{}/techreports/E-TR-{}.htm" url num
     else format "{}/standards/Ecma-{}.htm" url num
 
-{- | <http://cve.mitre.org CVEs> (Common Vulnerabilities and Exposures)
+{- | <http://cve.mitre.org CVEs> (Common Vulnerabilities and Exposures) (shortcut: “cve”)
 
 Link to a CVE:
 
@@ -1006,7 +1010,7 @@ cve _ x = do
     warn "CVE-ID doesn't follow the <year>-<digits> format"
   return ("http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-" <> n)
 
-{- | <https://wikipedia.org/ Wikipedia>
+{- | <https://wikipedia.org/ Wikipedia> (shortcut: “w” or “wikipedia”)
 
 Link to an article in English Wikipedia:
 
@@ -1029,7 +1033,7 @@ wikipedia mbLang q = return $
     lang = fromMaybe "en" mbLang
     q'   = titleFirst (replaceSpaces '_' q)
 
-{- | <http://tvtropes.org TV Tropes>
+{- | <http://tvtropes.org TV Tropes> (shortcut: “tvtropes”)
 
 Link to a trope:
 
