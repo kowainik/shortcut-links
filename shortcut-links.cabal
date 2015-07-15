@@ -1,9 +1,11 @@
 name:                shortcut-links
-version:             0.2.0.0
+version:             0.3.0.0
 synopsis:            Link shortcuts for use in text markup
 description:
   This package is a database of link shortcuts. A Markdown example: 
-  @\[Google\](\@w)@ turns into <http://en.wikipedia.org/wiki/Google Google>.
+  @\[Google\](\@w)@ turns into <http://en.wikipedia.org/wiki/Google>.
+  .
+  See the "ShortcutLinks.All" module for a full list of shortcuts.
 homepage:            http://github.com/aelve/shortcut-links
 bug-reports:         http://github.com/aelve/shortcut-links/issues
 license:             BSD3
