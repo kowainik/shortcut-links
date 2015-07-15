@@ -5,6 +5,7 @@ description:
   This package is a database of link shortcuts. A Markdown example: 
   @[Google](\@w)@ turns into <http://en.wikipedia.org/wiki/Google Google>.
 homepage:            http://github.com/aelve/shortcut-links
+bug-reports:         http://github.com/aelve/shortcut-links/issues
 license:             BSD3
 license-file:        LICENSE
 author:              Artyom
