@@ -5,6 +5,7 @@ OverloadedStrings
 module ShortcutLinks
 (
   Result(..),
+  Shortcut,
   allShortcuts,
 )
 where
@@ -14,7 +15,7 @@ where
 import Data.Text (Text)
 import qualified Data.Text as T
 -- shortcut-links
-import ShortcutLinks.All (allShortcuts, Result(..))
+import ShortcutLinks.All
 import ShortcutLinks.Utils (format)
 
 
