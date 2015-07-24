@@ -1,3 +1,8 @@
+# 0.4.0.0
+
+* Exported `Shortcut`.
+* Renamed “brabraumeisterumeister” to “brew” (it still uses Braumeister, but this can change in the future).
+
 # 0.3.0.0
 
 * Added shortcut names to their descriptions.
