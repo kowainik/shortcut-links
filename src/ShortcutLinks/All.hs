@@ -36,7 +36,7 @@ module ShortcutLinks.All
   -- ** Windows
   chocolatey,
   -- ** OS X
-  braumeister,
+  brew,
   -- ** Linux
   debian, aur, mint, fedora, gentoo, opensuse,
 
@@ -137,7 +137,7 @@ allShortcuts =
   -- OS
   "gplay googleplay"        .= googleplay,
   "chocolatey"              .= chocolatey,
-  "brew"                    .= braumeister,
+  "brew"                    .= brew,
   -- OS – Linux
   "debian"                  .= debian,
   "aur"                     .= aur,
@@ -653,10 +653,10 @@ Link to a formula:
 <http://braumeister.org/formula/multimarkdown>
 @
 
-Since all Homebrew formulas are stored in a Github repo anyway, and various sites are merely convenient ways to browse that repo, the “brew” shortcut can point to some other site in the future. Don't use it if you need /specifically/ Braumeister.
+Since all Homebrew formulas are stored in a Github repo anyway, and various sites are merely convenient ways to browse that repo, the “brew” shortcut can point to some other site in the future, depending on which site seems better. Don't use it if you need /specifically/ Braumeister.
 -}
-braumeister :: Shortcut
-braumeister _ q = return $ "http://braumeister.org/formula/" <> q
+brew :: Shortcut
+brew _ q = return $ "http://braumeister.org/formula/" <> q
 
 {- | <https://chocolatey.org Chocolatey> (shortcut: “chocolatey”)
 
