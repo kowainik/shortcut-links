@@ -1,5 +1,5 @@
 name:                shortcut-links
-version:             0.4.0.0
+version:             0.4.1.0
 synopsis:            Link shortcuts for use in text markup
 description:
   This package is a database of link shortcuts. A Markdown example: 

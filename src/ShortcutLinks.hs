@@ -7,6 +7,7 @@ module ShortcutLinks
   Result(..),
   Shortcut,
   allShortcuts,
+  useShortcut,
 )
 where
 

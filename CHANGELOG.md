@@ -1,3 +1,7 @@
+# 0.4.1.0
+
+* Exported `useShortcut` (gee).
+
 # 0.4.0.0
 
 * Exported `Shortcut`.
