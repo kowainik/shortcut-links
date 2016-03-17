@@ -1,6 +1,7 @@
 # 0.4.2.0
 
 * Added `useShortcutFrom`.
+* `@` is now allowed in Github/Gitlab/Bitbucket nicks.
 
 # 0.4.1.0
 

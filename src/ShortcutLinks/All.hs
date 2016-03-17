@@ -573,8 +573,10 @@ The repository owner can also be given as an option (to avoid mentioning nem in 
 -}
 github :: Shortcut
 github mbOwner q = case mbOwner of
-  Nothing    -> return $ format "https://github.com/{}" q
-  Just owner -> return $ format "https://github.com/{}/{}" owner q
+  Nothing    -> return $ format "https://github.com/{}" (stripAt q)
+  Just owner -> return $ format "https://github.com/{}/{}" (stripAt owner) q
+  where
+    stripAt x = if T.head x == '@' then T.tail x else x
 
 {- | <https://bitbucket.org Bitbucket> (shortcut: “bitbucket”)
 
@@ -601,8 +603,10 @@ The repository owner can also be given as an option (to avoid mentioning nem in 
 -}
 bitbucket :: Shortcut
 bitbucket mbOwner q = case mbOwner of
-  Nothing    -> return $ format "https://bitbucket.org/{}" q
-  Just owner -> return $ format "https://bitbucket.org/{}/{}" owner q
+  Nothing    -> return $ format "https://bitbucket.org/{}" (stripAt q)
+  Just owner -> return $ format "https://bitbucket.org/{}/{}" (stripAt owner) q
+  where
+    stripAt x = if T.head x == '@' then T.tail x else x
 
 {- | <https://gitlab.com Gitlab> (shortcut: “gitlab”)
 
@@ -629,8 +633,10 @@ The repository owner can also be given as an option (to avoid mentioning nem in 
 -}
 gitlab :: Shortcut
 gitlab mbOwner q = case mbOwner of
-  Nothing    -> return $ format "https://gitlab.com/{}" q
-  Just owner -> return $ format "https://gitlab.com/{}/{}" owner q
+  Nothing    -> return $ format "https://gitlab.com/{}" (stripAt q)
+  Just owner -> return $ format "https://gitlab.com/{}/{}" (stripAt owner) q
+  where
+    stripAt x = if T.head x == '@' then T.tail x else x
 
 {- | __Android__ – <https://play.google.com Google Play> (formerly Play Market) (shortcut: “gplay” or “googleplay”)
 
