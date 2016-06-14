@@ -564,7 +564,7 @@ Link to a repository:
 <https://github.com/aelve/shortcut-links>
 @
 
-The repository owner can also be given as an option (to avoid mentioning nem in the link text):
+The repository owner can also be given as an option (to avoid mentioning them in the link text):
 
 @
 \[shortcut-links\](\@gh(aelve))
@@ -594,7 +594,7 @@ Link to a repository:
 <https://bitbucket.org/bos/text>
 @
 
-The repository owner can also be given as an option (to avoid mentioning nem in the link text):
+The repository owner can also be given as an option (to avoid mentioning them in the link text):
 
 @
 \[text\](\@bitbucket(bos))
@@ -624,7 +624,7 @@ Link to a repository:
 <https://gitlab.com/learnyou/lysa>
 @
 
-The repository owner can also be given as an option (to avoid mentioning nem in the link text):
+The repository owner can also be given as an option (to avoid mentioning them in the link text):
 
 @
 \[lysa\](\@gitlab(learnyou))
