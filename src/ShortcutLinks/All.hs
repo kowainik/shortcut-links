@@ -1,8 +1,6 @@
-{-# LANGUAGE
-OverloadedStrings,
-DeriveFunctor,
-ViewPatterns
-  #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE ViewPatterns #-}
 
 
 module ShortcutLinks.All

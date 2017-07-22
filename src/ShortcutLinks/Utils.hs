@@ -1,7 +1,6 @@
-{-# LANGUAGE
-OverloadedStrings,
-FlexibleInstances
-  #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleInstances #-}
+
 
 {- |
 Useful functions when writing your own link rules.
