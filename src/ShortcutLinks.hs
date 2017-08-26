@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP               #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module ShortcutLinks
@@ -23,6 +24,9 @@ import Text.Megaparsec.Text (Parser)
 import ShortcutLinks.All
 import ShortcutLinks.Utils (format)
 
+#if ( __GLASGOW_HASKELL__ >= 706 )
+import Control.Applicative
+#endif
 
 -- | Use a shortcut from 'allShortcuts'.
 --
