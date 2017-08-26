@@ -1,5 +1,5 @@
 name:                shortcut-links
-version:             0.4.2.0
+version:             0.4.3.0
 synopsis:            Link shortcuts for use in text markup
 description:
   This package is a database of link shortcuts. A Markdown example: 
@@ -31,6 +31,7 @@ library
   -- other-modules:       
   -- other-extensions:    
   build-depends:       base >= 4.5 && < 5
+                     , megaparsec == 5.*
                      , text >= 1.1
   hs-source-dirs:      src
   default-language:    Haskell2010
