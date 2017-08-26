@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP               #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module ShortcutLinks
@@ -7,6 +8,7 @@ module ShortcutLinks
   allShortcuts,
   useShortcut,
   useShortcutFrom,
+  parseShortcut
 )
 where
 
@@ -14,10 +16,17 @@ where
 -- Text
 import Data.Text (Text)
 import qualified Data.Text as T
+-- megaparsec
+import Text.Megaparsec (alphaNumChar, anyChar, char, noneOf,
+                        optional, parse, some, (<|>))
+import Text.Megaparsec.Text (Parser)
 -- shortcut-links
 import ShortcutLinks.All
 import ShortcutLinks.Utils (format)
 
+#if ( __GLASGOW_HASKELL__ >= 706 )
+import Control.Applicative
+#endif
 
 -- | Use a shortcut from 'allShortcuts'.
 --
@@ -47,3 +56,24 @@ useShortcutFrom shortcuts name option link =
         []   -> fail (format "there's no shortcut named '{}'" name)
         [sh] -> (snd sh) option link
         _    -> fail (format "there's more than one shortcut named '{}'" name)
+
+-- | Parse a shortcut link. Allowed formats:
+--
+-- @
+-- \@name
+-- \@name:text
+-- \@name(option)
+-- \@name(option):text
+-- @
+parseShortcut :: Text -> Either String (Text, Maybe Text, Maybe Text)
+parseShortcut = either (Left . show) Right . parse p ""
+  where
+    shortcut = some (alphaNumChar <|> char '-')
+    opt      = char '(' *> some (noneOf [')']) <* char ')'
+    text     = char ':' *> some anyChar
+    p :: Parser (Text, Maybe Text, Maybe Text)
+    p = do
+      char '@'
+      (,,) <$> T.pack <$> shortcut
+           <*> optional (T.pack <$> opt)
+           <*> optional (T.pack <$> text)
