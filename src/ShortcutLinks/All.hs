@@ -918,13 +918,11 @@ Link to an extension's description in the user manual:
 
 @
 \[ViewPatterns\](\@ghc-ext)
-<https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/syntax-extns.html#view-patterns>
+<https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-ViewPatterns>
 @
 -}
 ghcExt :: Shortcut
-ghcExt _ ext = case lookup ext ghcExtsList of
-  Nothing   -> fail (format "unknown GHC extension '{}'" ext)
-  Just link -> return link
+ghcExt _ q = return $ "https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-" <> q
 
 {- | <https://www.ietf.org/rfc.html RFCs> (shortcut: “rfc”)
 
@@ -1069,114 +1067,3 @@ tvtropes mbCat q = return $
     -- Note that e.g. “man-made” is considered 2 separate words.
     camel = T.concat . map (titleFirst . T.filter isAlphaNum) . T.split isSep
     cat = maybe "Main" camel mbCat
-
-ghcExtsList :: [(Text, Text)]
-ghcExtsList = do
-  let (.=) = (,)
-      base = "https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/"
-      prefix x = map (\(a, b) -> (a, x <> b))
-  prefix base $ concat [
-    prefix "syntax-extns.html" [
-      "DisambiguateRecordFields" .= "#disambiguate-fields",
-      "EmptyCase" .= "#empty-case",
-      "NoImplicitPrelude" .= "#rebindable-syntax",
-      "NegativeLiterals" .= "#negative-literals",
-      "RebindableSyntax" .= "#rebindable-syntax",
-      "PatternGuards" .= "#pattern-guards",
-      "ViewPatterns" .= "#view-patterns",
-      "UnicodeSyntax" .= "#unicode-syntax",
-      "MagicHash" .= "#magic-hash",
-      "ParallelListComp" .= "#parallel-list-comprehensions",
-      "TransformListComp" .= "#generalised-list-comprehensions",
-      "MonadComprehensions" .= "#monad-comprehensions",
-      "ExplicitNamespaces" .= "#explicit-namespaces",
-      "RecursiveDo" .= "#recursive-do-notation",
-      "RecordWildCards" .= "#record-wildcards",
-      "NamedFieldPuns" .= "#record-puns",
-      "PackageImports" .= "#package-imports",
-      "LambdaCase" .= "#lambda-case",
-      "MultiWayIf" .= "#multi-way-if",
-      "NumDecimals" .= "#num-decimals",
-      "BinaryLiterals" .= "#binary-literals",
-      "PostfixOperators" .= "#postfix-operators",
-      "TupleSections" .= "#tuple-sections",
-      "PatternSynonyms" .= "#pattern-synonyms" ],
-
-    prefix "data-type-extensions.html" [
-      "GADTs" .= "#gadt",
-      "GADTSyntax" .= "#gadt-style",
-      "ExistentialQuantification" .= "#existential-quantification",
-      "LiberalTypeSynonyms" .= "#type-synonyms",
-      "EmptyDataDecls" .= "#nullary-types",
-      "DatatypeContexts" .= "#datatype-contexts",
-      "TypeOperators" .= "#type-operators" ],
-
-    prefix "other-type-extensions.html" [
-      "AllowAmbiguousTypes" .= "#ambiguity",
-      "ImplicitParams" .= "#implicit-parameters",
-      "NoMonomorphismRestriction" .= "#monomorphism",
-      "RelaxedPolyRec" .= "#typing-binds",
-      "MonoLocalBinds" .= "#mono-local-binds",
-      "ScopedTypeVariables" .= "#scoped-type-variables",
-      "ExplicitForAll" .= "#explicit-foralls",
-      "PolymorphicComponents" .= "#universal-quantification",
-      "Rank2Types" .= "#universal-quantification",
-      "RankNTypes" .= "#universal-quantification",
-      "ImpredicativeTypes" .= "#impredicative-polymorphism",
-      "KindSignatures" .= "#kinding",
-      "FlexibleContexts" .= "#flexible-contexts" ],
-
-    prefix "type-class-extensions.html" [
-      "IncoherentInstances" .= "#instance-overlap",
-      "OverlappingInstances" .= "#instance-overlap",
-      "OverloadedLists" .= "#overloaded-lists",
-      "OverloadedStrings" .= "#overloaded-strings",
-      "UndecidableInstances" .= "#undecidable-instances",
-      "TypeSynonymInstances" .= "#flexible-instance-head",
-      "FlexibleInstances" .= "#instance-rules",
-      "ConstrainedClassMethods" .= "#class-method-types",
-      "DefaultSignatures" .= "#class-default-signatures",
-      "MultiParamTypeClasses" .= "#multi-param-type-classes",
-      "NullaryTypeClasses" .= "#nullary-type-classes",
-      "InstanceSigs" .= "#instance-sigs",
-      "FunctionalDependencies" .= "#functional-dependencies" ],
-
-    prefix "deriving.html" [
-      "AutoDeriveTypeable" .= "#auto-derive-typeable",
-      "DeriveDataTypeable" .= "#deriving-typeable",
-      "DeriveGeneric" .= "#deriving-typeable",
-      "DeriveFunctor" .= "#deriving-extra",
-      "DeriveTraversable" .= "#deriving-extra",
-      "DeriveFoldable" .= "#deriving-extra",
-      "GeneralizedNewtypeDeriving" .= "#newtype-deriving",
-      "DeriveAnyClass" .= "#derive-any-class",
-      "StandaloneDeriving" .= "#stand-alone-deriving" ],
-
-    prefix "template-haskell.html" [
-      "TemplateHaskell" .= "",
-      "QuasiQuotes" .= "#th-quasiquotation" ],
-
-    prefix "ffi.html" [
-      "ForeignFunctionInterface" .= "",
-      "InterruptibleFFI" .= "#ffi-interruptible",
-      "CApiFFI" .= "#ffi-capi" ],
-
-    prefix "partial-type-signatures.html" [
-      "PartialTypeSignatures" .= "",
-      "NamedWildCards" .= "#named-wildcards" ],
-
-    map (.= "safe-haskell.html") [
-      "Safe",
-      "Trustworthy",
-      "Unsafe" ],
-
-    [ "Arrows" .= "arrow-notation.html",
-      "ConstraintKinds" .= "constraint-kind.html",
-      "DataKinds" .= "promotion.html",
-      "ExtendedDefaultRules" .= "interactive-evaluation.html#extended-default-rules",
-      "TypeFamilies" .= "type-families.html",
-      "PolyKinds" .= "kind-polymorphism.html",
-      "BangPatterns" .= "bang-patterns.html",
-      "CPP" .= "options-phases.html#c-pre-processor",
-      "RoleAnnotations" .= "roles.html#role-annotations",
-      "UnboxedTuples" .= "primitives.html#unboxed-tuples" ] ]

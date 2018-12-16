@@ -1,3 +1,7 @@
+# 0.4.2.1
+
+* Fixed links to GHC extensions.
+
 # 0.4.2.0
 
 * Added `useShortcutFrom`.

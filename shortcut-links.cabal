@@ -1,8 +1,8 @@
 name:                shortcut-links
-version:             0.4.2.0
+version:             0.4.2.1
 synopsis:            Link shortcuts for use in text markup
 description:
-  This package is a database of link shortcuts. A Markdown example: 
+  This package is a database of link shortcuts. A Markdown example:
   @\[Google\](\@w)@ turns into <http://en.wikipedia.org/wiki/Google>.
   .
   See the "ShortcutLinks.All" module for a full list of shortcuts.
@@ -15,7 +15,7 @@ maintainer:          Artyom <yom@artyom.me>
 copyright:           2015–∞ Aelve
 category:            Text, Web
 build-type:          Simple
-extra-source-files:  
+extra-source-files:
   README.md
   CHANGELOG.md
 cabal-version:       >=1.10
@@ -28,8 +28,8 @@ library
   exposed-modules:     ShortcutLinks
                        ShortcutLinks.All
                        ShortcutLinks.Utils
-  -- other-modules:       
-  -- other-extensions:    
+  -- other-modules:
+  -- other-extensions:
   build-depends:       base >= 4.5 && < 5
                      , text >= 1.1
   hs-source-dirs:      src
