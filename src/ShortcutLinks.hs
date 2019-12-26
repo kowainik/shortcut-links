@@ -46,7 +46,7 @@ useShortcutFrom
 useShortcutFrom shortcuts name option link =
     case filter givenShortcut shortcuts of
         []   -> fail (format "there's no shortcut named '{}'" name)
-        [sh] -> (snd sh) option link
+        [sh] -> snd sh option link
         _    -> fail (format "there's more than one shortcut named '{}'" name)
   where
     givenShortcut :: ([Text], Shortcut) -> Bool

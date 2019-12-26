@@ -114,7 +114,8 @@ instance FormatType Text where
         (length params)
 
 instance (FormatArg a, FormatType r) => FormatType (a -> r) where
-  format' str params = \a -> format' str (formatArg a : params)
+  format' :: Text -> [Text] -> (a -> r)
+  format' str params a = format' str (formatArg a : params)
 
 {- | A 'printf'-like function which fully supports 'Text' as an input and
 output format and which uses @{}@ instead of @%@ to indicate

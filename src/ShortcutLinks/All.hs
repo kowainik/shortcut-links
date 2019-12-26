@@ -294,7 +294,7 @@ Finally, there are different links for hashtags:
 -}
 googleplus :: Shortcut
 googleplus _ q
-  | T.null q        = return $ url
+  | T.null q        = return url
   | T.head q == '#' = return $ format "{}/explore/{}" url (T.tail q)
   | T.head q == '+' = return $ format "{}/{}" url q
   | T.all isDigit q = return $ format "{}/{}" url q
@@ -326,7 +326,7 @@ There are different links for hashtags:
 -}
 twitter :: Shortcut
 twitter _ q
-  | T.null q        = return $ url
+  | T.null q        = return url
   | T.head q == '#' = return $ format "{}/hashtag/{}" url (T.tail q)
   | T.head q == '@' = return $ format "{}/{}" url (T.tail q)
   | otherwise       = return $ format "{}/{}" url q
@@ -357,7 +357,7 @@ There are different links for tags (which start with “\*” and not with “#�
 -}
 juick :: Shortcut
 juick _ q
-  | T.null q        = return $ url
+  | T.null q        = return url
   | T.head q == '*' = return $ format "{}/tag/{}" url (T.tail q)
   | T.head q == '@' = return $ format "{}/{}" url (T.tail q)
   | otherwise       = return $ format "{}/{}" url q
