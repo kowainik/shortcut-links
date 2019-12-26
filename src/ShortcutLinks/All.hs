@@ -1,80 +1,126 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE CPP           #-}
 {-# LANGUAGE DeriveFunctor #-}
-{-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE ViewPatterns  #-}
 
+{- |
+Copyright:  (c) 2015-2019 Aelve
+            (c) 2019-2020 Kowainik
+SPDX-License-Identifier: MPL-2.0
+Maintainer: Kowainik <xrom.xkov@gmail.com>
+-}
 
 module ShortcutLinks.All
-(
-  Result(..),
-  Shortcut,
-  allShortcuts,
+    ( Result(..)
+    , Shortcut
+    , allShortcuts
 
-  -- * Encyclopedias
-  wikipedia, tvtropes,
+      -- * Encyclopedias
+    , wikipedia
+    , tvtropes
 
-  -- * Social networks
-  facebook, vk, googleplus,
+      -- * Social networks
+    , facebook
+    , vk
+    , googleplus
 
-  -- * Microblogs
-  twitter, juick,
+      -- * Microblogs
+    , twitter
+    , juick
 
-  -- * Major search engines
-  google, duckduckgo, yandex, baidu,
+      -- * Major search engines
+    , google
+    , duckduckgo
+    , yandex
+    , baidu
 
-  -- * Programming language libraries
-  npm, jam, rubygems, pypi, metacpanPod, metacpanRelease, hackage, cargo,
-  pub, hex, cran, swiprolog, dub, bpkg, pear,
+      -- * Programming language libraries
+    , npm
+    , jam
+    , rubygems
+    , pypi
+    , metacpanPod
+    , metacpanRelease
+    , hackage
+    , cargo
+    , pub
+    , hex
+    , cran
+    , swiprolog
+    , dub
+    , bpkg
+    , pear
 
-  -- * Code hosting
-  github, gitlab, bitbucket,
+      -- * Code hosting
+    , github
+    , gitlab
+    , bitbucket
 
-  -- * OS packages
-  -- ** Mobile
-  googleplay,
-  -- ** Windows
-  chocolatey,
-  -- ** OS X
-  brew,
-  -- ** Linux
-  debian, aur, mint, fedora, gentoo, opensuse,
+      -- * OS packages
+      -- ** Mobile
+    , googleplay
+      -- ** Windows
+    , chocolatey
+      -- ** OS X
+    , brew
+      -- ** Linux
+    , debian
+    , aur
+    , mint
+    , fedora
+    , gentoo
+    , opensuse
 
-  -- * Addons
-  -- ** Text editors
-  marmalade, melpa, elpa, packagecontrol, atomPackage, atomTheme, jedit, vim,
-  -- ** Browsers
-  operaExt, operaTheme, firefox, chrome,
+      -- * Addons
+      -- ** Text editors
+    , marmalade
+    , melpa
+    , elpa
+    , packagecontrol
+    , atomPackage
+    , atomTheme
+    , jedit
+    , vim
+      -- ** Browsers
+    , operaExt
+    , operaTheme
+    , firefox
+    , chrome
 
-  -- * Manuals
-  ghcExt,
+      -- * Manuals
+    , ghcExt
 
-  -- * Standards and databases
-  rfc, ecma, cve,
-)
-where
+      -- * Standards and databases
+    , rfc
+    , ecma
+    , cve
+    ) where
 
-
--- General
-import Data.Monoid
-import Control.Applicative
-import Control.Monad
-import Data.Maybe
--- Text
-import qualified Data.Text as T
+import Control.Monad (ap, unless, when)
+import Data.Char (isAlphaNum, isDigit, isPunctuation, isSpace)
+import Data.Maybe (fromMaybe)
+import Data.Semigroup ((<>))
 import Data.Text (Text)
-import Data.Char
--- shortcut-links
-import ShortcutLinks.Utils
 
+import ShortcutLinks.Utils (format, orElse, replaceSpaces, stripPrefixCI, titleFirst,
+                            tryStripPrefixCI)
 
-data Result a = Failure String | Warning [String] a | Success a
-  deriving (Show, Functor)
+import qualified Control.Monad.Fail as Fail
+import qualified Data.Text as T
+
+data Result a
+    = Failure String
+    | Warning [String] a
+    | Success a
+    deriving stock (Show, Functor)
 
 instance Applicative Result where
   pure = return
   (<*>) = ap
 
 instance Monad Result where
-  fail = Failure
+#if !(MIN_VERSION_base(4,13,0))
+  fail = Fail.fail
+#endif
   return = Success
   Failure x    >>= _ = Failure x
   Warning wa a >>= f = case f a of
@@ -82,6 +128,9 @@ instance Monad Result where
     Warning wb b -> Warning (wa ++ wb) b
     Failure x    -> Failure x
   Success    a >>= f = f a
+
+instance Fail.MonadFail Result where
+    fail = Failure
 
 warn :: String -> Result ()
 warn s = Warning [s] ()
@@ -245,7 +294,7 @@ Finally, there are different links for hashtags:
 -}
 googleplus :: Shortcut
 googleplus _ q
-  | T.null q        = return $ url
+  | T.null q        = return url
   | T.head q == '#' = return $ format "{}/explore/{}" url (T.tail q)
   | T.head q == '+' = return $ format "{}/{}" url q
   | T.all isDigit q = return $ format "{}/{}" url q
@@ -277,7 +326,7 @@ There are different links for hashtags:
 -}
 twitter :: Shortcut
 twitter _ q
-  | T.null q        = return $ url
+  | T.null q        = return url
   | T.head q == '#' = return $ format "{}/hashtag/{}" url (T.tail q)
   | T.head q == '@' = return $ format "{}/{}" url (T.tail q)
   | otherwise       = return $ format "{}/{}" url q
@@ -308,7 +357,7 @@ There are different links for tags (which start with “\*” and not with “#�
 -}
 juick :: Shortcut
 juick _ q
-  | T.null q        = return $ url
+  | T.null q        = return url
   | T.head q == '*' = return $ format "{}/tag/{}" url (T.tail q)
   | T.head q == '@' = return $ format "{}/{}" url (T.tail q)
   | otherwise       = return $ format "{}/{}" url q
