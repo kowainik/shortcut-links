@@ -1,3 +1,12 @@
+# Changelog
+
+`shortcut-links` uses [PVP Versioning][1].
+The changelog is available [on GitHub][2].
+
+# 0.5.0.0
+
+* Support GHC-8.8.1.
+
 # 0.4.2.1
 
 * Fixed links to GHC extensions.
@@ -31,3 +40,6 @@
 # 0.1.0.0
 
 First release.
+
+[1]: https://pvp.haskell.org
+[2]: https://github.com/kowainik/shortcut-links/releases
