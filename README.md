@@ -1,5 +1,6 @@
 # shortcut-links
 
+[![GitHub CI](https://github.com/kowainik/colourista/workflows/CI/badge.svg)](https://github.com/kowainik/colourista/actions)
 [![Travis CI](https://img.shields.io/travis/kowainik/shortcut-links.svg?logo=travis)](https://travis-ci.org/kowainik/shortcut-links)
 [![AppVeyor CI](https://ci.appveyor.com/api/projects/status/github/kowainik/shortcut-links?branch=master&svg=true)](https://ci.appveyor.com/project/kowainik/shortcut-links)
 [![Hackage](https://img.shields.io/hackage/v/shortcut-links.svg?logo=haskell)](https://hackage.haskell.org/package/shortcut-links)
