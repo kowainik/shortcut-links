@@ -1,6 +1,5 @@
 {-# LANGUAGE CPP           #-}
 {-# LANGUAGE DeriveFunctor #-}
-{-# LANGUAGE ViewPatterns  #-}
 
 {- |
 Copyright:  (c) 2015-2019 Aelve
@@ -22,6 +21,7 @@ module ShortcutLinks.All
     , facebook
     , vk
     , googleplus
+    , telegram
 
       -- * Microblogs
     , twitter
@@ -95,18 +95,23 @@ module ShortcutLinks.All
     , cve
     ) where
 
-import Control.Monad (ap, unless, when)
+import Control.Monad (unless, when)
 import Data.Char (isAlphaNum, isDigit, isPunctuation, isSpace)
 import Data.Maybe (fromMaybe)
 import Data.Semigroup ((<>))
 import Data.Text (Text)
 
-import ShortcutLinks.Utils (format, orElse, replaceSpaces, stripPrefixCI, titleFirst,
+import ShortcutLinks.Utils (format, formatSlash, orElse, replaceSpaces, stripPrefixCI, titleFirst,
                             tryStripPrefixCI)
 
 import qualified Control.Monad.Fail as Fail
 import qualified Data.Text as T
 
+
+-- $setup
+-- >>> import ShortcutLinks
+
+-- | Resulting data type over the work of @shortcut-links@
 data Result a
     = Failure String
     | Warning [String] a
@@ -114,31 +119,46 @@ data Result a
     deriving stock (Show, Functor)
 
 instance Applicative Result where
-  pure = return
-  (<*>) = ap
+    pure :: a -> Result a
+    pure = Success
+
+    (<*>) :: Result (a -> b) -> Result a -> Result b
+    Failure x <*> _ = Failure x
+    Warning wf f <*> s = case s of
+        Success a    -> Warning wf (f a)
+        Warning wa a -> Warning (wf <> wa) (f a)
+        Failure x    -> Failure x
+    Success f <*> a = f <$> a
 
 instance Monad Result where
 #if !(MIN_VERSION_base(4,13,0))
-  fail = Fail.fail
+    fail :: String -> Result a
+    fail = Fail.fail
 #endif
-  return = Success
-  Failure x    >>= _ = Failure x
-  Warning wa a >>= f = case f a of
-    Success    b -> Warning wa b
-    Warning wb b -> Warning (wa ++ wb) b
-    Failure x    -> Failure x
-  Success    a >>= f = f a
+    return :: a -> Result a
+    return = pure
+
+    (>>=) :: Result a -> (a -> Result b) -> Result b
+    Failure x    >>= _ = Failure x
+    Warning wa a >>= f = case f a of
+        Success    b -> Warning wa b
+        Warning wb b -> Warning (wa ++ wb) b
+        Failure x    -> Failure x
+    Success    a >>= f = f a
 
 instance Fail.MonadFail Result where
+    fail :: String -> Result a
     fail = Failure
 
+-- | Create a unit 'Warning' with a single warning message
 warn :: String -> Result ()
 warn s = Warning [s] ()
 
+-- | Type alias for shortcut links 'Result' functions.
 type Shortcut = Maybe Text -> Text -> Result Text
 
-{- |
-A list of all functions included in this module, together with suggested names for them.
+{- | A list of all functions included in this module, together with suggested
+names for them.
 -}
 allShortcuts :: [([Text], Shortcut)]
 allShortcuts =
@@ -153,6 +173,7 @@ allShortcuts =
   "fb facebook"             .= facebook,
   "vk vkontakte"            .= vk,
   "gp gplus googleplus"     .= googleplus,
+  "tg tme telegram"         .= telegram,
   -- microblogs
   "t twitter"               .= twitter,
   "juick"                   .= juick,
@@ -296,10 +317,44 @@ googleplus :: Shortcut
 googleplus _ q
   | T.null q        = return url
   | T.head q == '#' = return $ format "{}/explore/{}" url (T.tail q)
-  | T.head q == '+' = return $ format "{}/{}" url q
-  | T.all isDigit q = return $ format "{}/{}" url q
+  | T.head q == '+' = return $ formatSlash url q
+  | T.all isDigit q = return $ formatSlash url q
   | otherwise       = return $ format "{}/+{}" url (T.concat (T.words q))
-  where url = "https://plus.google.com"
+  where
+    url = "https://plus.google.com"
+
+{- | <https://t.me Telegram> (shortcut: "tg", "tme" or "telegram")
+
+Link by username:
+
+@
+\[Kowainik telegram channel\](\@t:kowainik)
+<https://t.me/kowainik>
+@
+
+
+It's alright if the username already starts with a “\@”:
+
+@
+\[\@kowainik\](\@t)
+<https://t.me/kowainik>
+@
+
+>>> useShortcut "telegram" Nothing ""
+Success "https://t.me"
+>>> useShortcut "tme" Nothing "@kowainik"
+Success "https://t.me/kowainik"
+>>> useShortcut "telegram" Nothing "kowainik"
+Success "https://t.me/kowainik"
+-}
+telegram :: Shortcut
+telegram _ q
+    | T.null q       = pure url
+    | Just ('@', username) <- T.uncons q = pure $ formatSlash url username
+    | otherwise      = pure $ formatSlash url q
+  where
+    url :: Text
+    url = "https://t.me"
 
 {- | <https://twitter.com Twitter> (shortcut: “t” or “twitter”)
 
@@ -328,8 +383,8 @@ twitter :: Shortcut
 twitter _ q
   | T.null q        = return url
   | T.head q == '#' = return $ format "{}/hashtag/{}" url (T.tail q)
-  | T.head q == '@' = return $ format "{}/{}" url (T.tail q)
-  | otherwise       = return $ format "{}/{}" url q
+  | T.head q == '@' = return $ formatSlash url (T.tail q)
+  | otherwise       = return $ formatSlash url q
   where url = "https://twitter.com"
 
 {- | <https://juick.com Juick> (shortcut: “juick”)
@@ -359,8 +414,8 @@ juick :: Shortcut
 juick _ q
   | T.null q        = return url
   | T.head q == '*' = return $ format "{}/tag/{}" url (T.tail q)
-  | T.head q == '@' = return $ format "{}/{}" url (T.tail q)
-  | otherwise       = return $ format "{}/{}" url q
+  | T.head q == '@' = return $ formatSlash url (T.tail q)
+  | otherwise       = return $ formatSlash url q
   where url = "https://juick.com"
 
 {- | <https://google.com Google> (shortcut: “google”)

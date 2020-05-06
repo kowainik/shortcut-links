@@ -30,13 +30,8 @@ source-repository head
   type:              git
   location:          git://github.com/kowainik/shortcut-links.git
 
-library
-  hs-source-dirs:      src
-  exposed-modules:     ShortcutLinks
-                         ShortcutLinks.All
-                         ShortcutLinks.Utils
+common common-options
   build-depends:       base >= 4.10 && < 4.15
-                     , text >= 1.1 && < 1.3
   ghc-options:         -Wall
                        -Wincomplete-uni-patterns
                        -Wincomplete-record-updates
@@ -52,9 +47,24 @@ library
                        -Werror=missing-deriving-strategies
   if impl(ghc >= 8.10.1)
     ghc-options:       -Wunused-packages
-
+  default-language:    Haskell2010
   default-extensions:  DerivingStrategies
                        InstanceSigs
                        OverloadedStrings
+                       ViewPatterns
 
-  default-language:    Haskell2010
+library
+  import:              common-options
+  hs-source-dirs:      src
+  exposed-modules:     ShortcutLinks
+                         ShortcutLinks.All
+                         ShortcutLinks.Utils
+  build-depends:       text >= 1.1 && < 1.3
+
+test-suite shortcut-links-doctest
+  import:              common-options
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Doctest.hs
+  build-depends:       doctest ^>= 0.16
+  ghc-options:         -threaded
