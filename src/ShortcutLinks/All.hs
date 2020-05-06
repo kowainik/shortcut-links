@@ -1131,13 +1131,28 @@ You can link to Wikipedia-in-another-language if you give language code as an op
 \[Haskell\](\@w(ru))
 <https://ru.wikipedia.org/wiki/Haskell>
 @
+
+
+>>> useShortcut "wikipedia" Nothing ""
+Success "https://en.wikipedia.org/wiki/"
+>>> useShortcut "w" (Just "ru") ""
+Success "https://ru.wikipedia.org/wiki/"
+>>> useShortcut "wikipedia" Nothing "Query"
+Success "https://en.wikipedia.org/wiki/Query"
+>>> useShortcut "w" Nothing "multiple words query"
+Success "https://en.wikipedia.org/wiki/Multiple_words_query"
+>>> useShortcut "wikipedia" Nothing "grey-headed flying fox"
+Success "https://en.wikipedia.org/wiki/Grey-headed_flying_fox"
+
+>>> useShortcut "w" Nothing "pattern matching#primitive patterns"
+Success "https://en.wikipedia.org/wiki/Pattern_matching#Primitive_patterns"
 -}
 wikipedia :: Shortcut
-wikipedia mbLang q = return $
-  format "https://{}.wikipedia.org/wiki/{}" lang q'
+wikipedia (fromMaybe "en" -> lang) q = pure $
+    format "https://{}.wikipedia.org/wiki/{}" lang replacedQ
   where
-    lang = fromMaybe "en" mbLang
-    q'   = titleFirst (replaceSpaces '_' q)
+    replacedQ :: Text
+    replacedQ = titleFirst (replaceSpaces '_' q)
 
 {- | <http://tvtropes.org TV Tropes> (shortcut: “tvtropes”)
 
