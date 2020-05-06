@@ -16,6 +16,7 @@ module ShortcutLinks.Utils
     , stripPrefixCI
     , orElse
     , format
+    , formatSlash
     ) where
 
 import Data.Char (isSpace, toUpper)
@@ -126,3 +127,6 @@ package, and it's closer to 'printf' and simpler to use.
 -}
 format :: FormatType r => Text -> r
 format str = format' str []
+
+formatSlash :: FormatType r => r
+formatSlash = format "{}/{}"
