@@ -540,14 +540,14 @@ Success "https://stackage.org"
 Success "https://stackage.org/nightly"
 >>> useShortcut "stackage" (Just "lts") ""
 Success "https://stackage.org/lts"
->>> useShortcut "stackage" (Just "lst") ""
-Success "https://stackage.org/lts"
+>>> useShortcut "stackage" (Just "lts-15.0") ""
+Success "https://stackage.org/lts-15.0"
 >>> useShortcut "stackage" Nothing "colourista"
 Success "https://stackage.org/lts/package/colourista"
 >>> useShortcut "stackage" (Just "nightly") "colourista"
 Success "https://stackage.org/nightly/package/colourista"
->>> useShortcut "stackage" (Just "lts") "colourista"
-Success "https://stackage.org/lts/package/colourista"
+>>> useShortcut "stackage" (Just "lts-15.10") "colourista"
+Success "https://stackage.org/lts-15.10/package/colourista"
 -}
 stackage :: Shortcut
 stackage ltsNightly q
@@ -559,9 +559,7 @@ stackage ltsNightly q
     url = "https://stackage.org"
 
     lts :: Text
-    lts = case ltsNightly of
-        Just "nightly" -> "nightly"
-        _              -> "lts"
+    lts = fromMaybe "lts" ltsNightly
 
 {- | __Haskell__ – <https://haskell.org/cabal/users-guide Cabal> (shortcut: “cabal”)
 
