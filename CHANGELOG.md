@@ -3,7 +3,7 @@
 `shortcut-links` uses [PVP Versioning][1].
 The changelog is available [on GitHub][2].
 
-## Unreleased
+## 0.5.1.0 — May 6, 2020
 
 * [#10](https://github.com/kowainik/colourista/issues/10):
   Support GHC-8.10.1. Move to support of GHC-8.8.3 instead of 8.8.1.

@@ -1,6 +1,6 @@
 cabal-version:       2.4
 name:                shortcut-links
-version:             0.5.0.0
+version:             0.5.1.0
 synopsis:            Link shortcuts for use in text markup
 description:
   This package is a database of link shortcuts. A Markdown example:
