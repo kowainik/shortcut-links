@@ -34,13 +34,18 @@ module ShortcutLinks.All
     , baidu
 
       -- * Programming language libraries
+      -- ** Haskell
+    , haskell
+    , hackage
+    , stackage
+    , cabal
+      -- ** Other
     , npm
     , jam
     , rubygems
     , pypi
     , metacpanPod
     , metacpanRelease
-    , hackage
     , cargo
     , pub
     , hex
@@ -49,6 +54,7 @@ module ShortcutLinks.All
     , dub
     , bpkg
     , pear
+
 
       -- * Code hosting
     , github
@@ -97,7 +103,7 @@ module ShortcutLinks.All
 
 import Control.Monad (unless, when)
 import Data.Char (isAlphaNum, isDigit, isPunctuation, isSpace)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, isNothing)
 import Data.Semigroup ((<>))
 import Data.Text (Text)
 
@@ -165,74 +171,80 @@ allShortcuts =
   -- When changing something here, don't forget to update the description for
   -- the corresponding shortcut.
   let (.=) names func = (T.words names, func)
-  in [
-  -- encyclopedias
-  "w wikipedia"             .= wikipedia,
-  "tvtropes"                .= tvtropes,
-  -- social networks
-  "fb facebook"             .= facebook,
-  "vk vkontakte"            .= vk,
-  "gp gplus googleplus"     .= googleplus,
-  "tg tme telegram"         .= telegram,
-  -- microblogs
-  "t twitter"               .= twitter,
-  "juick"                   .= juick,
-  -- search engines
-  "google"                  .= google,
-  "ddg duckduckgo"          .= duckduckgo,
-  "yandex"                  .= yandex,
-  "baidu"                   .= baidu,
-  -- programming language libraries
-  "npm"                     .= npm,
-  "jam"                     .= jam,
-  "gem"                     .= rubygems,
-  "pypi"                    .= pypi,
-  "cpan"                    .= metacpanPod,
-  "cpan-r"                  .= metacpanRelease,
-  "hackage"                 .= hackage,
-  "cargo"                   .= cargo,
-  "pub"                     .= pub,
-  "hex"                     .= hex,
-  "cran"                    .= cran,
-  "swiprolog"               .= swiprolog,
-  "dub"                     .= dub,
-  "bpkg"                    .= bpkg,
-  "pear"                    .= pear,
-  -- code hosting
-  "gh github"               .= github,
-  "gitlab"                  .= gitlab,
-  "bitbucket"               .= bitbucket,
-  -- OS
-  "gplay googleplay"        .= googleplay,
-  "chocolatey"              .= chocolatey,
-  "brew"                    .= brew,
-  -- OS – Linux
-  "debian"                  .= debian,
-  "aur"                     .= aur,
-  "mint"                    .= mint,
-  "fedora"                  .= fedora,
-  "gentoo"                  .= gentoo,
-  "opensuse"                .= opensuse,
-  -- text editors
-  "marmalade"               .= marmalade,
-  "melpa"                   .= melpa,
-  "elpa"                    .= elpa,
-  "sublimepc"               .= packagecontrol,
-  "atom"                    .= atomPackage,
-  "atom-theme"              .= atomTheme,
-  "jedit"                   .= jedit,
-  "vim"                     .= vim,
-  -- browsers
-  "opera"                   .= operaExt,
-  "opera-theme"             .= operaTheme,
-  "firefox"                 .= firefox,
-  "chrome"                  .= chrome,
-  -- manuals
-  "ghc-ext"                 .= ghcExt,
-  -- standards and databases
-  "rfc"                     .= rfc,
-  "ecma"                    .= ecma,
-  "cve"                     .= cve ]
+  in
+    [ -- encyclopedias
+      "w wikipedia"             .= wikipedia
+    , "tvtropes"                .= tvtropes
+      -- social networks
+    , "fb facebook"             .= facebook
+    , "vk vkontakte"            .= vk
+    , "gp gplus googleplus"     .= googleplus
+    , "tg tme telegram"         .= telegram
+      -- microblogs
+    , "t twitter"               .= twitter
+    , "juick"                   .= juick
+      -- search engines
+    , "google"                  .= google
+    , "ddg duckduckgo"          .= duckduckgo
+    , "yandex"                  .= yandex
+    , "baidu"                   .= baidu
+      -- programming language libraries
+        -- Haskell
+    , "hackage hk" .= hackage
+    , "stackage"   .= stackage
+    , "haskell hs" .= haskell
+    , "cabal"      .= cabal
+        -- Others
+    , "npm"                     .= npm
+    , "jam"                     .= jam
+    , "gem"                     .= rubygems
+    , "pypi"                    .= pypi
+    , "cpan"                    .= metacpanPod
+    , "cpan-r"                  .= metacpanRelease
+    , "cargo"                   .= cargo
+    , "pub"                     .= pub
+    , "hex"                     .= hex
+    , "cran"                    .= cran
+    , "swiprolog"               .= swiprolog
+    , "dub"                     .= dub
+    , "bpkg"                    .= bpkg
+    , "pear"                    .= pear
+      -- code hosting
+    , "gh github"               .= github
+    , "gitlab"                  .= gitlab
+    , "bitbucket"               .= bitbucket
+      -- OS
+    , "gplay googleplay"        .= googleplay
+    , "chocolatey"              .= chocolatey
+    , "brew"                    .= brew
+      -- OS – Linux
+    , "debian"                  .= debian
+    , "aur"                     .= aur
+    , "mint"                    .= mint
+    , "fedora"                  .= fedora
+    , "gentoo"                  .= gentoo
+    , "opensuse"                .= opensuse
+      -- text editors
+    , "marmalade"               .= marmalade
+    , "melpa"                   .= melpa
+    , "elpa"                    .= elpa
+    , "sublimepc"               .= packagecontrol
+    , "atom"                    .= atomPackage
+    , "atom-theme"              .= atomTheme
+    , "jedit"                   .= jedit
+    , "vim"                     .= vim
+      -- browsers
+    , "opera"                   .= operaExt
+    , "opera-theme"             .= operaTheme
+    , "firefox"                 .= firefox
+    , "chrome"                  .= chrome
+      -- manuals
+    , "ghc-ext"                 .= ghcExt
+      -- standards and databases
+    , "rfc"                     .= rfc
+    , "ecma"                    .= ecma
+    , "cve"                     .= cve
+    ]
 
 {- | <https://facebook.com Facebook> (shortcut: “fb” or “facebook”)
 
@@ -468,6 +480,107 @@ Search results:
 baidu :: Shortcut
 baidu _ q = return $ "http://baidu.com/s?nojc=1&wd=" <> replaceSpaces '+' q
 
+----------------------------------------------------------------------------
+-- Haskell
+----------------------------------------------------------------------------
+
+{- | __Haskell__ – <https://haskell.org> (shortcut: “haskell hs”)
+
+Link to ghcup:
+
+@
+\[ghcup\](\@haskell)
+<https://haskell.org/ghcup>
+@
+
+>>> useShortcut "haskell" Nothing ""
+Success "https://haskell.org/"
+>>> useShortcut "hs" Nothing "ghcup"
+Success "https://haskell.org/ghcup"
+-}
+haskell :: Shortcut
+haskell _ q = pure $ "https://haskell.org/" <> replaceSpaces '_' q
+
+
+{- | __Haskell__ – <https://hackage.haskell.org Hackage> (shortcut: “hackage hk”)
+
+Link to a package:
+
+@
+\[shortcut-links\](\@hackage)
+<https://hackage.haskell.org/package/shortcut-links>
+@
+
+>>> useShortcut "hackage" Nothing ""
+Success "https://hackage.haskell.org"
+>>> useShortcut "hk" Nothing "shortcut-links"
+Success "https://hackage.haskell.org/package/shortcut-links"
+
+-}
+hackage :: Shortcut
+hackage _ q
+    | T.null q  = pure hkUrl
+    | otherwise = pure $ format "{}/package/{}" hkUrl (replaceSpaces '-' q)
+  where
+    hkUrl :: Text
+    hkUrl = "https://hackage.haskell.org"
+
+{- | __Haskell__ – <https://staskell.org Stackage> (shortcut: “stackage”)
+
+Link to a package:
+
+@
+\[colourista\](\@stackage)
+<https://stackage.org/lts/package/colourista>
+@
+
+>>> useShortcut "stackage" Nothing ""
+Success "https://stackage.org"
+>>> useShortcut "stackage" (Just "nightly") ""
+Success "https://stackage.org/nightly"
+>>> useShortcut "stackage" (Just "lts") ""
+Success "https://stackage.org/lts"
+>>> useShortcut "stackage" (Just "lst") ""
+Success "https://stackage.org/lts"
+>>> useShortcut "stackage" Nothing "colourista"
+Success "https://stackage.org/lts/package/colourista"
+>>> useShortcut "stackage" (Just "nightly") "colourista"
+Success "https://stackage.org/nightly/package/colourista"
+>>> useShortcut "stackage" (Just "lts") "colourista"
+Success "https://stackage.org/lts/package/colourista"
+-}
+stackage :: Shortcut
+stackage ltsNightly q
+    | T.null q && isNothing ltsNightly = pure url
+    | T.null q  = pure $ format "{}/{}" url lts
+    | otherwise = pure $ format "{}/{}/package/{}" url lts (replaceSpaces '-' q)
+  where
+    url :: Text
+    url = "https://stackage.org"
+
+    lts :: Text
+    lts = case ltsNightly of
+        Just "nightly" -> "nightly"
+        _              -> "lts"
+
+{- | __Haskell__ – <https://haskell.org/cabal/users-guide Cabal> (shortcut: “cabal”)
+
+Link to the intoduction package:
+
+@
+\[intro.html\](\@hackage)
+<https://haskell.org/cabal/users-guide/intro.html>
+@
+
+>>> useShortcut "cabal" Nothing "intro.html"
+Success "https://haskell.org/cabal/users-guide/intro.html"
+-}
+cabal :: Shortcut
+cabal _ q = pure $ format "{}/{}" url (replaceSpaces '-' q)
+  where
+    url :: Text
+    url = "https://haskell.org/cabal/users-guide"
+
 {- | __Node.js__ – <https://npmjs.com NPM> (shortcut: “npm”)
 
 Link to a package:
@@ -541,18 +654,6 @@ Link to a release:
 -}
 metacpanRelease :: Shortcut
 metacpanRelease _ q = return $ "https://metacpan.org/release/" <> q
-
-{- | __Haskell__ – <https://hackage.haskell.org Hackage> (shortcut: “hackage”)
-
-Link to a package:
-
-@
-\[cmark\](\@hackage)
-<https://hackage.haskell.org/package/cmark>
-@
--}
-hackage :: Shortcut
-hackage _ q = return $ "https://hackage.haskell.org/package/" <> q
 
 {- | __Rust__ – <https://crates.io Cargo> (shortcut: “cargo”)
 
