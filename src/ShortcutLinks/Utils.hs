@@ -44,9 +44,12 @@ e.g. Wikipedia links, a link to the article on “ß” would've been rendered
 as “Ss”, which is a redirect to “Schutzstaffel”.
 -}
 titleFirst :: Text -> Text
-titleFirst s = case T.uncons s of
-  Nothing        -> ""
-  Just (c, rest) -> toUpper c `T.cons` rest
+titleFirst = T.intercalate "#" . map title . T.splitOn "#"
+  where
+    title :: Text -> Text
+    title s = case T.uncons s of
+        Nothing        -> ""
+        Just (c, rest) -> toUpper c `T.cons` rest
 
 {- | Strip given prefix from a string, or do nothing if the string doesn't
 have given prefix.
