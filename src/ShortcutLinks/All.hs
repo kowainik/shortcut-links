@@ -3,7 +3,7 @@
 
 {- |
 Copyright:  (c) 2015-2019 Aelve
-            (c) 2019-2020 Kowainik
+            (c) 2019-2021 Kowainik
 SPDX-License-Identifier: MPL-2.0
 Maintainer: Kowainik <xrom.xkov@gmail.com>
 -}

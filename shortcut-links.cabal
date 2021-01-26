@@ -14,7 +14,7 @@ license-file:        LICENSE
 author:              Artyom
 maintainer:          Kowainik <xrom.xkov@gmail.com>
 copyright:           2015–2019 Aelve (BSD-3-Clause)
-                     2019-2020 Kowainik
+                     2019-2021 Kowainik
 category:            Text, Web, Markdown
 build-type:          Simple
 stability:           stable
@@ -24,7 +24,7 @@ tested-with:         GHC == 8.2.2
                      GHC == 8.4.4
                      GHC == 8.6.5
                      GHC == 8.8.3
-                     GHC == 8.10.1
+                     GHC == 8.10.3
 
 source-repository head
   type:              git
