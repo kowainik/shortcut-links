@@ -104,7 +104,6 @@ module ShortcutLinks.All
 import Control.Monad (unless, when)
 import Data.Char (isAlphaNum, isDigit, isPunctuation, isSpace)
 import Data.Maybe (fromMaybe, isNothing)
-import Data.Semigroup ((<>))
 import Data.Text (Text)
 
 import ShortcutLinks.Utils (format, formatSlash, orElse, replaceSpaces, stripPrefixCI, titleFirst,

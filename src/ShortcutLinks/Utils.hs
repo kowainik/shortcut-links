@@ -20,7 +20,6 @@ module ShortcutLinks.Utils
     ) where
 
 import Data.Char (isSpace, toUpper)
-import Data.Semigroup ((<>))
 import Data.Text (Text)
 
 import qualified Data.Text as T
