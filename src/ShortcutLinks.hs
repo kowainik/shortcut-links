@@ -35,7 +35,9 @@ useShortcut = useShortcutFrom allShortcuts
 For instance, if you want to add @hk@ as a synonym for @hackage@, you'd
 write:
 
->>> useShortcutFrom ((["hk"], hackage) : allShortcuts)
+@
+useShortcutFrom ((["hk"], hackage) : allShortcuts)
+@
 -}
 useShortcutFrom
   :: [([Text], Shortcut)]

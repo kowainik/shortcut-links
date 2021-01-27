@@ -116,6 +116,7 @@ import qualified Data.Text as T
 
 -- $setup
 -- >>> import ShortcutLinks
+-- >>> import ShortcutLinks.Utils
 
 -- | Resulting data type over the work of @shortcut-links@
 data Result a

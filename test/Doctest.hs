@@ -25,4 +25,6 @@ main = doctest
     : "-XScopedTypeVariables"
     : "-XTypeApplications"
     : [ "src/ShortcutLinks/All.hs"
+      , "src/ShortcutLinks/Utils.hs"
+      , "src/ShortcutLinks.hs"
       ]
