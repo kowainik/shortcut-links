@@ -1,6 +1,6 @@
 cabal-version:       2.4
 name:                shortcut-links
-version:             0.5.1.0
+version:             0.5.1.1
 synopsis:            Link shortcuts for use in text markup
 description:
   This package is a database of link shortcuts. A Markdown example:
@@ -14,24 +14,23 @@ license-file:        LICENSE
 author:              Artyom
 maintainer:          Kowainik <xrom.xkov@gmail.com>
 copyright:           2015–2019 Aelve (BSD-3-Clause)
-                     2019-2020 Kowainik
+                     2019-2021 Kowainik
 category:            Text, Web, Markdown
 build-type:          Simple
 stability:           stable
 extra-doc-files:     README.md
                      CHANGELOG.md
-tested-with:         GHC == 8.2.2
-                     GHC == 8.4.4
+tested-with:         GHC == 8.4.4
                      GHC == 8.6.5
-                     GHC == 8.8.3
-                     GHC == 8.10.1
+                     GHC == 8.8.4
+                     GHC == 8.10.3
 
 source-repository head
   type:              git
   location:          git://github.com/kowainik/shortcut-links.git
 
 common common-options
-  build-depends:       base >= 4.10 && < 4.15
+  build-depends:       base >= 4.11 && < 4.15
   ghc-options:         -Wall
                        -Wincomplete-uni-patterns
                        -Wincomplete-record-updates
