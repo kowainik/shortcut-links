@@ -3,6 +3,10 @@
 `shortcut-links` uses [PVP Versioning][1].
 The changelog is available [on GitHub][2].
 
+## 0.5.1.1 — Oct 10, 2025
+
+- Support GHC 9.6.
+
 ## 0.5.1.1 — Jan 27, 2021
 
 * Drop support of GHC-8.2.2.
